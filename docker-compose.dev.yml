@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Microsoft SQL Server Database
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: blog_mssql_dev
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=BlogApp123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_dev_data:/var/opt/mssql
+    networks:
+      - blog_network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P BlogApp123! -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Golang API Backend (Development with hot reload)
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    container_name: blog_api_dev
+    environment:
+      - DB_HOST=mssql
+      - DB_PORT=1433
+      - DB_NAME=blog
+      - DB_USER=sa
+      - DB_PASSWORD=BlogApp123!
+      - DB_ENCRYPT=false
+      - DB_TRUST_CERT=true
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - PORT=8080
+      - GIN_MODE=debug
+    ports:
+      - "8080:8080"
+    depends_on:
+      mssql:
+        condition: service_healthy
+    networks:
+      - blog_network
+    volumes:
+      - ./api:/app
+    restart: unless-stopped
+
+  # Next.js Frontend (Development with hot reload)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    container_name: blog_client_dev
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - blog_network
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
+    restart: unless-stopped
+
+volumes:
+  mssql_dev_data:
+
+networks:
+  blog_network:
+    driver: bridge

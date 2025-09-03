@@ -1,0 +1,160 @@
+{
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "create": "Tạo",
+    "update": "Cập nhật",
+    "publish": "Xuất bản",
+    "draft": "Bản nháp",
+    "published": "Đã xuất bản",
+    "home": "Trang chủ",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước",
+    "search": "Tìm kiếm",
+    "welcome": "Chào mừng"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "dashboard": "Bảng điều khiển",
+    "write": "Viết bài",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "signup": "Đăng ký",
+    "profile": "Hồ sơ"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "Chào mừng bạn trở lại! Vui lòng đăng nhập vào tài khoản của bạn.",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "emailPlaceholder": "Nhập email của bạn",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "loginButton": "Đăng nhập",
+      "loggingIn": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "signupLink": "Đăng ký",
+      "invalidCredentials": "Email hoặc mật khẩu không hợp lệ",
+      "networkError": "Đã xảy ra lỗi mạng"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "subtitle": "Tham gia cộng đồng của chúng tôi và bắt đầu chia sẻ kiến thức của bạn.",
+      "email": "Email",
+      "username": "Tên người dùng",
+      "password": "Mật khẩu",
+      "emailPlaceholder": "Nhập email của bạn",
+      "usernamePlaceholder": "Chọn tên người dùng",
+      "passwordPlaceholder": "Tạo mật khẩu",
+      "registerButton": "Tạo tài khoản",
+      "registering": "Đang tạo tài khoản...",
+      "hasAccount": "Đã có tài khoản?",
+      "loginLink": "Đăng nhập",
+      "userExists": "Người dùng với email hoặc tên người dùng này đã tồn tại"
+    },
+    "welcome": "Chào mừng, {username}"
+  },
+  "home": {
+    "hero": {
+      "title": "Chào mừng đến với DevBlog",
+      "subtitle": "Khám phá những câu chuyện, hiểu biết và kiến thức tuyệt vời từ các nhà phát triển trên khắp thế giới. Chia sẻ hành trình của riêng bạn và kết nối với cộng đồng.",
+      "startWriting": "Bắt đầu viết",
+      "signIn": "Đăng nhập"
+    },
+    "posts": {
+      "title": "Bài viết mới nhất",
+      "loading": "Đang tải bài viết...",
+      "noPosts": {
+        "title": "Chưa có bài viết nào",
+        "subtitle": "Hãy là người đầu tiên chia sẻ kiến thức của bạn với cộng đồng!",
+        "createFirst": "Tạo bài viết đầu tiên của bạn"
+      },
+      "pagination": {
+        "page": "Trang {current} / {total}"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "subtitle": "Chào mừng bạn trở lại, {username}! Quản lý bài viết của bạn tại đây.",
+    "newPost": "Bài viết mới",
+    "stats": {
+      "totalPosts": "Tổng số bài viết",
+      "published": "Đã xuất bản",
+      "drafts": "Bản nháp"
+    },
+    "yourPosts": "Bài viết của bạn",
+    "noPosts": {
+      "title": "Chưa có bài viết nào",
+      "subtitle": "Bắt đầu viết bài blog đầu tiên của bạn để chia sẻ kiến thức với cộng đồng.",
+      "writeFirst": "Viết bài đầu tiên của bạn"
+    },
+    "postActions": {
+      "view": "Xem",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "confirmDelete": "Bạn có chắc chắn muốn xóa bài viết này không?"
+    },
+    "postMeta": {
+      "created": "Tạo: {date}",
+      "updated": "Cập nhật: {date}"
+    }
+  },
+  "post": {
+    "create": {
+      "title": "Tạo bài viết mới",
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "Nhập tiêu đề bài viết của bạn...",
+      "contentLabel": "Nội dung (Markdown)",
+      "contentPlaceholder": "Viết nội dung bài viết của bạn bằng Markdown...",
+      "saveAsDraft": "Lưu làm bản nháp",
+      "publish": "Xuất bản",
+      "titleRequired": "Tiêu đề và nội dung là bắt buộc",
+      "creating": "Đang tạo bài viết...",
+      "createError": "Không thể tạo bài viết"
+    },
+    "edit": {
+      "title": "Chỉnh sửa bài viết",
+      "updating": "Đang cập nhật bài viết...",
+      "updateAndPublish": "Cập nhật & Xuất bản",
+      "updateError": "Không thể cập nhật bài viết"
+    },
+    "view": {
+      "writtenBy": "Viết bởi {author}",
+      "publishedOn": "Xuất bản vào {date}",
+      "lastUpdated": "Cập nhật lần cuối vào {date}",
+      "notFound": "Không tìm thấy bài viết"
+    },
+    "card": {
+      "readMore": "Đọc thêm"
+    },
+    "editor": {
+      "preview": "Xem trước",
+      "edit": "Chỉnh sửa",
+      "previewEmpty": "Không có gì để xem trước..."
+    }
+  },
+  "errors": {
+    "general": "Đã xảy ra lỗi",
+    "network": "Đã xảy ra lỗi mạng",
+    "unauthorized": "Bạn không được phép thực hiện hành động này",
+    "notFound": "Không tìm thấy tài nguyên được yêu cầu",
+    "validation": "Vui lòng kiểm tra thông tin nhập và thử lại",
+    "database": "Đã xảy ra lỗi cơ sở dữ liệu"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "email": "Vui lòng nhập địa chỉ email hợp lệ",
+    "minLength": "Phải có ít nhất {min} ký tự",
+    "maxLength": "Phải ít hơn {max} ký tự",
+    "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+    "usernameMin": "Tên người dùng phải có ít nhất 3 ký tự",
+    "usernameMax": "Tên người dùng phải ít hơn 20 ký tự"
+  }
+}

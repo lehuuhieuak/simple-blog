@@ -1,0 +1,160 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "publish": "Publish",
+    "draft": "Draft",
+    "published": "Published",
+    "home": "Home",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "welcome": "Welcome"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "write": "Write",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back! Please sign in to your account.",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "loginButton": "Sign In",
+      "loggingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up",
+      "invalidCredentials": "Invalid email or password",
+      "networkError": "Network error occurred"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join our community and start sharing your knowledge.",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email",
+      "usernamePlaceholder": "Choose a username",
+      "passwordPlaceholder": "Create a password",
+      "registerButton": "Create Account",
+      "registering": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "userExists": "User with this email or username already exists"
+    },
+    "welcome": "Welcome, {username}"
+  },
+  "home": {
+    "hero": {
+      "title": "Welcome to DevBlog",
+      "subtitle": "Discover amazing stories, insights, and knowledge from developers around the world. Share your own journey and connect with the community.",
+      "startWriting": "Start Writing",
+      "signIn": "Sign In"
+    },
+    "posts": {
+      "title": "Latest Posts",
+      "loading": "Loading posts...",
+      "noPosts": {
+        "title": "No posts yet",
+        "subtitle": "Be the first to share your knowledge with the community!",
+        "createFirst": "Create Your First Post"
+      },
+      "pagination": {
+        "page": "Page {current} of {total}"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome back, {username}! Manage your posts here.",
+    "newPost": "New Post",
+    "stats": {
+      "totalPosts": "Total Posts",
+      "published": "Published",
+      "drafts": "Drafts"
+    },
+    "yourPosts": "Your Posts",
+    "noPosts": {
+      "title": "No posts yet",
+      "subtitle": "Start writing your first blog post to share your knowledge with the community.",
+      "writeFirst": "Write Your First Post"
+    },
+    "postActions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Are you sure you want to delete this post?"
+    },
+    "postMeta": {
+      "created": "Created: {date}",
+      "updated": "Updated: {date}"
+    }
+  },
+  "post": {
+    "create": {
+      "title": "Create New Post",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter your post title...",
+      "contentLabel": "Content (Markdown)",
+      "contentPlaceholder": "Write your post content in Markdown...",
+      "saveAsDraft": "Save as Draft",
+      "publish": "Publish",
+      "titleRequired": "Title and content are required",
+      "creating": "Creating post...",
+      "createError": "Failed to create post"
+    },
+    "edit": {
+      "title": "Edit Post",
+      "updating": "Updating post...",
+      "updateAndPublish": "Update & Publish",
+      "updateError": "Failed to update post"
+    },
+    "view": {
+      "writtenBy": "Written by {author}",
+      "publishedOn": "Published on {date}",
+      "lastUpdated": "Last updated on {date}",
+      "notFound": "Post not found"
+    },
+    "card": {
+      "readMore": "Read more"
+    },
+    "editor": {
+      "preview": "Preview",
+      "edit": "Edit",
+      "previewEmpty": "Nothing to preview..."
+    }
+  },
+  "errors": {
+    "general": "An error occurred",
+    "network": "Network error occurred",
+    "unauthorized": "You are not authorized to perform this action",
+    "notFound": "The requested resource was not found",
+    "validation": "Please check your input and try again",
+    "database": "Database error occurred"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be less than {max} characters",
+    "passwordMin": "Password must be at least 6 characters",
+    "usernameMin": "Username must be at least 3 characters",
+    "usernameMax": "Username must be less than 20 characters"
+  }
+}
