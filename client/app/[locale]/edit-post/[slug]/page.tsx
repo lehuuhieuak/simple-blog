@@ -85,7 +85,7 @@ export default function EditPostPage({ params }: PageProps) {
 
     try {
       await apiClient.updatePost(slug, { title, content, published });
-      router.push('./dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || 'An error occurred while updating the post');
     } finally {
