@@ -258,7 +258,7 @@ func GetMyPosts(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	var posts []models.Post
+	var posts = []models.Post{}
 	for rows.Next() {
 		var post models.Post
 		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Excerpt, &post.CreatedAt, &post.UpdatedAt, &post.Published, &post.AuthorUsername)
