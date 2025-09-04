@@ -7,14 +7,13 @@ import (
 func InitializeDatabase() error {
 	// Create users table
 	_, err := DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='users' AND xtype='U')
-		CREATE TABLE users (
-			id INT IDENTITY(1,1) PRIMARY KEY,
-			email NVARCHAR(255) UNIQUE NOT NULL,
-			username NVARCHAR(100) UNIQUE NOT NULL,
-			password NVARCHAR(255) NOT NULL,
-			created_at DATETIME2 DEFAULT GETDATE(),
-			updated_at DATETIME2 DEFAULT GETDATE()
+		CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			email VARCHAR(255) UNIQUE NOT NULL,
+			username VARCHAR(100) UNIQUE NOT NULL,
+			password VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)
 	`)
 	if err != nil {
@@ -23,17 +22,16 @@ func InitializeDatabase() error {
 
 	// Create posts table
 	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='posts' AND xtype='U')
-		CREATE TABLE posts (
-			id INT IDENTITY(1,1) PRIMARY KEY,
-			title NVARCHAR(255) NOT NULL,
-			slug NVARCHAR(255) UNIQUE NOT NULL,
-			content NTEXT NOT NULL,
-			excerpt NTEXT,
-			author_id INT NOT NULL,
-			published BIT DEFAULT 0,
-			created_at DATETIME2 DEFAULT GETDATE(),
-			updated_at DATETIME2 DEFAULT GETDATE(),
+		CREATE TABLE IF NOT EXISTS posts (
+			id SERIAL PRIMARY KEY,
+			title VARCHAR(255) NOT NULL,
+			slug VARCHAR(255) UNIQUE NOT NULL,
+			content TEXT NOT NULL,
+			excerpt TEXT,
+			author_id INTEGER NOT NULL,
+			published BOOLEAN DEFAULT FALSE,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
 		)
 	`)
@@ -42,25 +40,30 @@ func InitializeDatabase() error {
 	}
 
 	// Create indexes
-	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_posts_slug')
-		CREATE INDEX idx_posts_slug ON posts(slug)
-	`)
+	_, err = DB.Exec(`CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug)`)
 	if err != nil {
 		return err
 	}
 
-	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_posts_author')
-		CREATE INDEX idx_posts_author ON posts(author_id)
-	`)
+	_, err = DB.Exec(`CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id)`)
 	if err != nil {
 		return err
 	}
 
+	_, err = DB.Exec(`CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published)`)
+	if err != nil {
+		return err
+	}
+
+	// Create function for updating updated_at timestamp
 	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_posts_published')
-		CREATE INDEX idx_posts_published ON posts(published)
+		CREATE OR REPLACE FUNCTION update_updated_at_column()
+		RETURNS TRIGGER AS $$
+		BEGIN
+			NEW.updated_at = CURRENT_TIMESTAMP;
+			RETURN NEW;
+		END;
+		$$ language 'plpgsql'
 	`)
 	if err != nil {
 		return err
@@ -68,34 +71,22 @@ func InitializeDatabase() error {
 
 	// Create triggers for updated_at
 	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'tr_users_updated_at')
-		EXEC('CREATE TRIGGER tr_users_updated_at
-		ON users
-		AFTER UPDATE
-		AS
-		BEGIN
-			UPDATE users 
-			SET updated_at = GETDATE()
-			FROM users u
-			INNER JOIN inserted i ON u.id = i.id
-		END')
+		DROP TRIGGER IF EXISTS tr_users_updated_at ON users;
+		CREATE TRIGGER tr_users_updated_at
+			BEFORE UPDATE ON users
+			FOR EACH ROW
+			EXECUTE FUNCTION update_updated_at_column()
 	`)
 	if err != nil {
 		return err
 	}
 
 	_, err = DB.Exec(`
-		IF NOT EXISTS (SELECT * FROM sys.triggers WHERE name = 'tr_posts_updated_at')
-		EXEC('CREATE TRIGGER tr_posts_updated_at
-		ON posts
-		AFTER UPDATE
-		AS
-		BEGIN
-			UPDATE posts 
-			SET updated_at = GETDATE()
-			FROM posts p
-			INNER JOIN inserted i ON p.id = i.id
-		END')
+		DROP TRIGGER IF EXISTS tr_posts_updated_at ON posts;
+		CREATE TRIGGER tr_posts_updated_at
+			BEFORE UPDATE ON posts
+			FOR EACH ROW
+			EXECUTE FUNCTION update_updated_at_column()
 	`)
 	if err != nil {
 		return err

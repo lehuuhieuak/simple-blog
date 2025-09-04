@@ -7,17 +7,17 @@ import (
 
 	"blog-api/config"
 
-	_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
 func Connect(cfg *config.Config) error {
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;encrypt=%t;TrustServerCertificate=%t",
-		cfg.DBHost, cfg.DBUser, cfg.DBPassword, cfg.DBPort, cfg.DBName, cfg.DBEncrypt, cfg.DBTrustCert)
+	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode)
 
 	var err error
-	DB, err = sql.Open("sqlserver", connString)
+	DB, err = sql.Open("postgres", connString)
 	if err != nil {
 		return fmt.Errorf("error opening database: %v", err)
 	}
@@ -26,7 +26,7 @@ func Connect(cfg *config.Config) error {
 		return fmt.Errorf("error connecting to database: %v", err)
 	}
 
-	log.Println("Successfully connected to MSSQL database")
+	log.Println("Successfully connected to PostgreSQL database")
 	return nil
 }
 

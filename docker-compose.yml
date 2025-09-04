@@ -1,23 +1,23 @@
 version: '3.8'
 
 services:
-  # Microsoft SQL Server Database
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: blog_mssql_prod
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: blog_postgres_prod
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD_FILE=/run/secrets/db_password
-      - MSSQL_PID=Express
+      - POSTGRES_DB=${DB_NAME:-blog}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
     secrets:
       - db_password
     volumes:
-      - mssql_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
       - ./backups:/var/backups
     networks:
       - backend_network
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $(cat /run/secrets/db_password) -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ${DB_NAME:-blog}"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -26,9 +26,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
-        reservations:
           memory: 1G
+        reservations:
+          memory: 512M
 
   # Golang API Backend
   api:
@@ -37,12 +37,11 @@ services:
       dockerfile: Dockerfile
     container_name: blog_api_prod
     environment:
-      - DB_HOST=mssql
-      - DB_PORT=1433
+      - DB_HOST=postgres
+      - DB_PORT=5432
       - DB_NAME=${DB_NAME:-blog}
-      - DB_USER=sa
-      - DB_ENCRYPT=true
-      - DB_TRUST_CERT=false
+      - DB_USER=postgres
+      - DB_SSLMODE=disable
       - PORT=8080
       - GIN_MODE=release
     env_file:
@@ -51,7 +50,7 @@ services:
       - db_password
       - jwt_secret
     depends_on:
-      mssql:
+      postgres:
         condition: service_healthy
     networks:
       - backend_network
@@ -142,7 +141,7 @@ services:
       retries: 3
 
 volumes:
-  mssql_data:
+  postgres_data:
     driver: local
   redis_data:
     driver: local

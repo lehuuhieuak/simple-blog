@@ -25,9 +25,9 @@ func GetPosts(c *gin.Context) {
 			u.username as author_username
 		FROM posts p
 		JOIN users u ON p.author_id = u.id
-		WHERE p.published = 1
+		WHERE p.published = true
 		ORDER BY p.created_at DESC
-		OFFSET @p1 ROWS FETCH NEXT @p2 ROWS ONLY
+		LIMIT $2 OFFSET $1
 	`, offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
@@ -35,7 +35,7 @@ func GetPosts(c *gin.Context) {
 	}
 	defer rows.Close()
 
-	var posts []models.Post
+	posts := []models.Post{}
 	for rows.Next() {
 		var post models.Post
 		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Excerpt, &post.CreatedAt, &post.Published, &post.AuthorUsername)
@@ -48,7 +48,7 @@ func GetPosts(c *gin.Context) {
 
 	// Get total count
 	var total int
-	err = database.DB.QueryRow("SELECT COUNT(*) FROM posts WHERE published = 1").Scan(&total)
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM posts WHERE published = true").Scan(&total)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
 		return
@@ -77,7 +77,7 @@ func GetPostBySlug(c *gin.Context) {
 			u.username as author_username, u.email as author_email
 		FROM posts p
 		JOIN users u ON p.author_id = u.id
-		WHERE p.slug = @p1 AND p.published = 1
+		WHERE p.slug = $1
 	`, slug).Scan(&post.ID, &post.Title, &post.Slug, &post.Content, &post.Excerpt, &post.CreatedAt, &post.UpdatedAt, &post.Published, &post.AuthorID, &post.AuthorUsername, &post.AuthorEmail)
 
 	if err != nil {
@@ -113,7 +113,7 @@ func CreatePost(c *gin.Context) {
 
 	// Create post
 	var postID int
-	err := database.DB.QueryRow("INSERT INTO posts (title, slug, content, excerpt, author_id, published) OUTPUT INSERTED.id VALUES (@p1, @p2, @p3, @p4, @p5, @p6)",
+	err := database.DB.QueryRow("INSERT INTO posts (title, slug, content, excerpt, author_id, published) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 		req.Title, slug, req.Content, excerpt, userObj.ID, req.Published).Scan(&postID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
@@ -151,7 +151,7 @@ func UpdatePost(c *gin.Context) {
 
 	// Check if post exists and user owns it
 	var post models.Post
-	err := database.DB.QueryRow("SELECT id, author_id FROM posts WHERE slug = @p1", slug).
+	err := database.DB.QueryRow("SELECT id, author_id FROM posts WHERE slug = $1", slug).
 		Scan(&post.ID, &post.AuthorID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -172,7 +172,7 @@ func UpdatePost(c *gin.Context) {
 	excerpt := utils.GenerateExcerpt(req.Content, 150)
 
 	// Update post
-	_, err = database.DB.Exec("UPDATE posts SET title = @p1, slug = @p2, content = @p3, excerpt = @p4, published = @p5 WHERE id = @p6",
+	_, err = database.DB.Exec("UPDATE posts SET title = $1, slug = $2, content = $3, excerpt = $4, published = $5 WHERE id = $6",
 		req.Title, newSlug, req.Content, excerpt, req.Published, post.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
@@ -203,7 +203,7 @@ func DeletePost(c *gin.Context) {
 
 	// Check if post exists and user owns it
 	var post models.Post
-	err := database.DB.QueryRow("SELECT id, author_id FROM posts WHERE slug = @p1", slug).
+	err := database.DB.QueryRow("SELECT id, author_id FROM posts WHERE slug = $1", slug).
 		Scan(&post.ID, &post.AuthorID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -220,7 +220,7 @@ func DeletePost(c *gin.Context) {
 	}
 
 	// Delete post
-	_, err = database.DB.Exec("DELETE FROM posts WHERE id = @p1", post.ID)
+	_, err = database.DB.Exec("DELETE FROM posts WHERE id = $1", post.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
 		return
@@ -248,9 +248,9 @@ func GetMyPosts(c *gin.Context) {
 			u.username as author_username
 		FROM posts p
 		JOIN users u ON p.author_id = u.id
-		WHERE p.author_id = @p1
+		WHERE p.author_id = $1
 		ORDER BY p.created_at DESC
-		OFFSET @p2 ROWS FETCH NEXT @p3 ROWS ONLY
+		LIMIT $3 OFFSET $2
 	`, userObj.ID, offset, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
@@ -271,7 +271,7 @@ func GetMyPosts(c *gin.Context) {
 
 	// Get total count
 	var total int
-	err = database.DB.QueryRow("SELECT COUNT(*) FROM posts WHERE author_id = @p1", userObj.ID).Scan(&total)
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM posts WHERE author_id = $1", userObj.ID).Scan(&total)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
 		return

@@ -17,9 +17,9 @@ type Post struct {
 }
 
 type PostRequest struct {
-	Title     string `json:"title" binding:"required,max=255"`
-	Content   string `json:"content" binding:"required"`
-	Published bool   `json:"published"`
+	Title     string   `json:"title" binding:"required,max=255"`
+	Content   string   `json:"content" binding:"required"`
+	Published bool     `json:"published"`
 }
 
 type PostsResponse struct {

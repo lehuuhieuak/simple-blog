@@ -20,7 +20,7 @@ func Register(c *gin.Context) {
 
 	// Check if user already exists
 	var count int
-	err := database.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = @p1 OR username = @p2", req.Email, req.Username).Scan(&count)
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM users WHERE email = $1 OR username = $2", req.Email, req.Username).Scan(&count)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
 		return
@@ -40,7 +40,7 @@ func Register(c *gin.Context) {
 
 	// Create user
 	var userID int
-	err = database.DB.QueryRow("INSERT INTO users (email, username, password) OUTPUT INSERTED.id VALUES (@p1, @p2, @p3)",
+	err = database.DB.QueryRow("INSERT INTO users (email, username, password) VALUES ($1, $2, $3) RETURNING id",
 		req.Email, req.Username, hashedPassword).Scan(&userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
@@ -75,7 +75,7 @@ func Login(c *gin.Context) {
 
 	// Get user by email
 	var user models.User
-	err := database.DB.QueryRow("SELECT id, email, username, password FROM users WHERE email = @p1", req.Email).
+	err := database.DB.QueryRow("SELECT id, email, username, password FROM users WHERE email = $1", req.Email).
 		Scan(&user.ID, &user.Email, &user.Username, &user.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
