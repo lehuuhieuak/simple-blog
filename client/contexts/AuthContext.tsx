@@ -1,7 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { apiClient, ApiError } from '@/lib/api';
+import { authQueryKeys } from '@/hooks/api/auth';
+import { handleApiError, isAuthError } from '@/lib/api-error-handler';
 
 interface User {
   id: number;
@@ -23,16 +26,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   const checkAuth = async () => {
     try {
-      const userData = await apiClient.getMe();
+      const userData = await apiClient.auth.getMe();
       setUser(userData);
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('Auth check failed:', handleApiError(error));
       setUser(null);
-      // Clear invalid token
-      localStorage.removeItem('auth-token');
+      // Clear invalid token only if it's an auth error
+      if (isAuthError(error)) {
+        localStorage.removeItem('auth-token');
+      }
     } finally {
       setLoading(false);
     }
@@ -44,31 +50,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await apiClient.login({ email, password });
+      const response = await apiClient.auth.login({ email, password });
       setUser(response.user);
+      // Set user data in query cache
+      queryClient.setQueryData(authQueryKeys.user, response.user);
       return { success: true };
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Login failed' };
+    } catch (error) {
+      return { success: false, error: handleApiError(error) };
     }
   };
 
   const register = async (email: string, username: string, password: string) => {
     try {
-      const response = await apiClient.register({ email, username, password });
+      const response = await apiClient.auth.register({ email, username, password });
       setUser(response.user);
+      // Set user data in query cache
+      queryClient.setQueryData(authQueryKeys.user, response.user);
       return { success: true };
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Registration failed' };
+    } catch (error) {
+      return { success: false, error: handleApiError(error) };
     }
   };
 
   const logout = async () => {
     try {
-      await apiClient.logout();
+      await apiClient.auth.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Logout error:', handleApiError(error));
     } finally {
       setUser(null);
+      // Clear all query cache on logout
+      queryClient.clear();
     }
   };
 
