@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,46 +9,28 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LexicalEditor } from '@/components/lexical-editor';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTags } from '@/hooks/api/tags';
+import { useCreatePost } from '@/hooks/api/posts';
 import { Save, Eye, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { apiClient } from '@/lib/api';
-
-interface Tag {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  color: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { ITag } from '@/types/tag.type';
 
 export default function CreatePostPage() {
   const { user, loading: authLoading } = useAuth();
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('post.create');
   const tCommon = useTranslations('common');
 
-  useEffect(() => {
-    fetchTags();
-  }, []);
+  // React Query hooks for server state
+  const { data: tagsData, isLoading: tagsLoading } = useTags(1, 100);
+  const createPostMutation = useCreatePost();
 
-  const fetchTags = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
-      const data = await response.json();
-      setAvailableTags(data.tags || []);
-    } catch (error) {
-      console.error('Error fetching tags:', error);
-    }
-  };
+  // Local state for form
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const [error, setError] = useState('');
 
   if (!authLoading && !user) {
     router.push(`/${locale}/login`);
@@ -61,12 +43,11 @@ export default function CreatePostPage() {
       return;
     }
 
-    setLoading(true);
     setError('');
 
     try {
       const tagIds = selectedTags.map(tag => tag.id);
-      await apiClient.createPost({
+      await createPostMutation.mutateAsync({
         title,
         content,
         published,
@@ -75,12 +56,10 @@ export default function CreatePostPage() {
       router.push('./dashboard');
     } catch (error: any) {
       setError(error.message || tCommon('error'));
-    } finally {
-      setLoading(false);
     }
   };
 
-  const addTag = (tag: Tag) => {
+  const addTag = (tag: ITag) => {
     if (!selectedTags.find(t => t.id === tag.id)) {
       setSelectedTags([...selectedTags, tag]);
     }
@@ -90,7 +69,10 @@ export default function CreatePostPage() {
     setSelectedTags(selectedTags.filter(tag => tag.id !== tagId));
   };
 
-  if (authLoading) {
+  const availableTags = tagsData?.tags || [];
+  const isSubmitting = createPostMutation.isPending;
+
+  if (authLoading || tagsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
@@ -178,7 +160,7 @@ export default function CreatePostPage() {
             <Button
               variant="outline"
               onClick={() => router.back()}
-              disabled={loading}
+              disabled={isSubmitting}
             >
               {tCommon('cancel')}
             </Button>
@@ -187,14 +169,14 @@ export default function CreatePostPage() {
               <Button
                 variant="outline"
                 onClick={() => handleSubmit(false)}
-                disabled={loading}
+                disabled={isSubmitting}
               >
                 <Save className="h-4 w-4 mr-2" />
                 {t('saveAsDraft')}
               </Button>
               <Button
                 onClick={() => handleSubmit(true)}
-                disabled={loading}
+                disabled={isSubmitting}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 {tCommon('publish')}

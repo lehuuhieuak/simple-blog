@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreateTag, useDeleteTag, useTags, useUpdateTag } from '@/hooks/api/tags';
+import { useCrudDialogsWithFilter } from '@/hooks/factory';
 import { tagSchema, type TagInput } from '@/lib/validations';
 import { ITag } from '@/types/tag.type';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,15 +39,12 @@ export default function TagsManagePage() {
   const tc = useTranslations('common');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [editingTag, setEditingTag] = useState<ITag | null>(null);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
-
-  const { user } = useAuth();
   const limit = 12;
 
+  // Use factory hook for CRUD dialog state management
+  const dialogs = useCrudDialogsWithFilter<ITag>('' as any);
+
+  const { user } = useAuth();
   const { data: tagsData, isLoading, error } = useTags(currentPage, limit);
   const createTagMutation = useCreateTag();
   const updateTagMutation = useUpdateTag();
@@ -67,8 +65,8 @@ export default function TagsManagePage() {
 
   // Filter tags based on search term
   const filteredTags = tagsData?.tags?.filter(tag =>
-    tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tag.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    tag.name.toLowerCase().includes(dialogs.searchTerm.toLowerCase()) ||
+    tag.description?.toLowerCase().includes(dialogs.searchTerm.toLowerCase())
   ) || [];
 
   const handleCreateTag = async (data: TagInput) => {
@@ -79,18 +77,18 @@ export default function TagsManagePage() {
         color: data.color,
       });
       createForm.reset();
-      setIsCreateDialogOpen(false);
+      dialogs.closeCreate();
     } catch (error) {
       console.error('Error creating tag:', error);
     }
   };
 
   const handleEditTag = async (data: TagInput) => {
-    if (!editingTag) return;
+    if (!dialogs.editingItem) return;
 
     try {
       await updateTagMutation.mutateAsync({
-        id: editingTag.id,
+        id: dialogs.editingItem.id,
         data: {
           name: data.name,
           description: data.description || '',
@@ -98,8 +96,7 @@ export default function TagsManagePage() {
         },
       });
       editForm.reset();
-      setEditingTag(null);
-      setIsEditDialogOpen(false);
+      dialogs.closeEdit();
     } catch (error) {
       console.error('Error updating tag:', error);
     }
@@ -108,20 +105,19 @@ export default function TagsManagePage() {
   const handleDeleteTag = async (id: number) => {
     try {
       await deleteTagMutation.mutateAsync(id);
-      setDeleteConfirm(null);
+      dialogs.closeDeleteConfirm();
     } catch (error) {
       console.error('Error deleting tag:', error);
     }
   };
 
   const openEditDialog = (tag: ITag) => {
-    setEditingTag(tag);
+    dialogs.openEdit(tag);
     editForm.reset({
       name: tag.name,
       description: tag.description || '',
       color: tag.color,
     });
-    setIsEditDialogOpen(true);
   };
 
   if (isLoading) {
@@ -160,7 +156,7 @@ export default function TagsManagePage() {
         </div>
 
         {user && (
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog open={dialogs.isCreateOpen} onOpenChange={dialogs.setIsCreateOpen}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -229,7 +225,7 @@ export default function TagsManagePage() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setIsCreateDialogOpen(false)}
+                    onClick={dialogs.closeCreate}
                   >
                     {tc('cancel')}
                   </Button>
@@ -251,13 +247,13 @@ export default function TagsManagePage() {
         <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder={tc('search')}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={dialogs.searchTerm}
+          onChange={(e) => dialogs.setSearchTerm(e.target.value)}
           className="pl-10"
         />
-        {searchTerm && (
+        {dialogs.searchTerm && (
           <button
-            onClick={() => setSearchTerm('')}
+            onClick={dialogs.clearSearch}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
@@ -289,7 +285,7 @@ export default function TagsManagePage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setDeleteConfirm(tag.id)}
+                      onClick={() => dialogs.openDeleteConfirm(tag.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -319,16 +315,16 @@ export default function TagsManagePage() {
         <div className="text-center py-12">
           <TagIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">
-            {searchTerm ? t('noTags') : t('noTagsYet')}
+            {dialogs.searchTerm ? t('noTags') : t('noTagsYet')}
           </h3>
           <p className="text-muted-foreground mb-4">
-            {searchTerm
+            {dialogs.searchTerm
               ? t('noTags')
               : t('noTagsYet')
             }
           </p>
-          {searchTerm && (
-            <Button variant="outline" onClick={() => setSearchTerm('')}>
+          {dialogs.searchTerm && (
+            <Button variant="outline" onClick={dialogs.clearSearch}>
               {t('searchCleared')}
             </Button>
           )}
@@ -365,7 +361,7 @@ export default function TagsManagePage() {
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+      <Dialog open={dialogs.isEditOpen} onOpenChange={dialogs.setIsEditOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('editTitle')}</DialogTitle>
@@ -428,7 +424,7 @@ export default function TagsManagePage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={dialogs.closeEdit}
               >
                 {tc('cancel')}
               </Button>
@@ -444,7 +440,7 @@ export default function TagsManagePage() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
+      <Dialog open={dialogs.deleteConfirmId !== null} onOpenChange={() => dialogs.closeDeleteConfirm()}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('deleteTitle')}</DialogTitle>
@@ -455,13 +451,13 @@ export default function TagsManagePage() {
           <div className="flex justify-end space-x-2 pt-4">
             <Button
               variant="outline"
-              onClick={() => setDeleteConfirm(null)}
+              onClick={dialogs.closeDeleteConfirm}
             >
               {tc('cancel')}
             </Button>
             <Button
               variant="destructive"
-              onClick={() => deleteConfirm && handleDeleteTag(deleteConfirm)}
+              onClick={() => dialogs.deleteConfirmId && handleDeleteTag(dialogs.deleteConfirmId as number)}
               disabled={deleteTagMutation.isPending}
             >
               {deleteTagMutation.isPending ? t('deletingButton') : tc('delete')}
