@@ -1,20 +1,11 @@
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { IPost } from '@/types/post.typs';
 import { Calendar, User } from 'lucide-react';
-
-interface Post {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt: string;
-  author_username: string;
-  created_at: string;
-  published: boolean;
-}
+import Link from 'next/link';
 
 interface PostCardProps {
-  post: Post;
+  post: IPost;
 }
 
 export function PostCard({ post }: PostCardProps) {
@@ -29,22 +20,29 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <Badge variant={post.published ? 'default' : 'secondary'}>
-            {post.published ? 'Published' : 'Draft'}
-          </Badge>
-        </div>
-        <CardTitle className="line-clamp-2">
-          <Link 
+        <CardTitle className="">
+          <Link
             href={`./posts/${post.slug}`}
             className="hover:text-primary transition-colors"
           >
             {post.title}
           </Link>
         </CardTitle>
-        <CardDescription className="line-clamp-3">
-          {post.excerpt}
-        </CardDescription>
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {post.tags.map((tag) => (
+              <Link key={tag.id} href={`./tags/${tag.slug}`}>
+                <Badge
+                  variant="outline"
+                  className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
+                  style={{ borderColor: tag.color, color: tag.color }}
+                >
+                  {tag.name}
+                </Badge>
+              </Link>
+            ))}
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between text-sm text-muted-foreground">

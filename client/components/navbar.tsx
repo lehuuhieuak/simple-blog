@@ -1,60 +1,70 @@
 'use client';
 
+import { SettingsDialog } from '@/components/settings-dialog';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { Home, LogOut, PenTool, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
-import { Button } from '@/components/ui/button';
-import { PenTool, LogOut, User, Home } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { LanguageSwitcher } from '@/components/language-switcher';
-import { useTranslations } from 'next-intl';
 
-export function Navbar() {
+export function Navbar({ locale, theme }: { locale: string; theme: string }) {
   const { user, logout, loading } = useAuth();
   const router = useRouter();
-  const locale = useLocale();
   const t = useTranslations('nav');
 
   const handleLogout = async () => {
     await logout();
-    router.push(`/${locale}`);
+    router.push('/');
   };
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
+    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-1">
+      <div className="mx-auto container">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href={`/${locale}`} className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2">
               <PenTool className="h-6 w-6" />
               <span className="text-xl font-bold">DevBlog</span>
             </Link>
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href={`/${locale}`}>
+            <Link href="/">
               <Button variant="ghost" size="sm">
                 <Home className="h-4 w-4 mr-2" />
                 {t('home')}
               </Button>
             </Link>
 
-            <LanguageSwitcher />
+            <SettingsDialog locale={locale} theme={theme} />
 
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                <span className="text-sm text-muted-foreground">Loading...</span>
+                <span className="text-sm text-muted-foreground">
+                  Loading...
+                </span>
               </div>
             ) : user ? (
               <>
-                <Link href={`/${locale}/dashboard`}>
+                <Link href="/dashboard">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4 mr-2" />
                     {t('dashboard')}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/create-post`}>
+                <Link href="/tags">
+                  <Button variant="ghost" size="sm">
+                    {t('tags')}
+                  </Button>
+                </Link>
+                <Link href="/users">
+                  <Button variant="ghost" size="sm">
+                    Users
+                  </Button>
+                </Link>
+                <Link href="/create-post">
                   <Button variant="default" size="sm">
                     <PenTool className="h-4 w-4 mr-2" />
                     {t('write')}
@@ -70,12 +80,12 @@ export function Navbar() {
               </>
             ) : (
               <>
-                <Link href={`/${locale}/login`}>
+                <Link href="/login">
                   <Button variant="ghost" size="sm">
                     {t('login')}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/register`}>
+                <Link href="/register">
                   <Button variant="default" size="sm">
                     {t('signup')}
                   </Button>
