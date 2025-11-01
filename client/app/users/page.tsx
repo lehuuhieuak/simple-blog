@@ -1,5 +1,6 @@
 'use client';
 
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,7 +35,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
-export default function UsersPage() {
+function UsersPageContent() {
   const t = useTranslations('pages.users');
   const tc = useTranslations('common');
 
@@ -418,5 +419,13 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <ProtectedRoute page="users">
+      <UsersPageContent />
+    </ProtectedRoute>
   );
 }

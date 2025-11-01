@@ -3,13 +3,15 @@
 import { SettingsDialog } from '@/components/settings-dialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { Home, LogOut, PenTool, User } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
+import { Home, LogOut, PenTool, User, Shield } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export function Navbar({ locale, theme }: { locale: string; theme: string }) {
   const { user, logout, loading } = useAuth();
+  const { isAdmin } = usePermissions();
   const router = useRouter();
   const t = useTranslations('nav');
 
@@ -54,16 +56,25 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
                     {t('dashboard')}
                   </Button>
                 </Link>
-                <Link href="/tags">
-                  <Button variant="ghost" size="sm">
-                    {t('tags')}
-                  </Button>
-                </Link>
-                <Link href="/users">
-                  <Button variant="ghost" size="sm">
-                    Users
-                  </Button>
-                </Link>
+
+                {/* Admin-only links */}
+                {isAdmin && (
+                  <>
+                    <Link href="/tags">
+                      <Button variant="ghost" size="sm">
+                        <Shield className="h-4 w-4 mr-2" />
+                        {t('tags')}
+                      </Button>
+                    </Link>
+                    <Link href="/users">
+                      <Button variant="ghost" size="sm">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Users
+                      </Button>
+                    </Link>
+                  </>
+                )}
+
                 <Link href="/create-post">
                   <Button variant="default" size="sm">
                     <PenTool className="h-4 w-4 mr-2" />
@@ -76,6 +87,11 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
                 </Button>
                 <span className="text-sm text-muted-foreground">
                   {user.username}
+                  {isAdmin && (
+                    <span className="ml-2 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 px-2 py-0.5 rounded">
+                      Admin
+                    </span>
+                  )}
                 </span>
               </>
             ) : (

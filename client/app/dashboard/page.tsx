@@ -1,5 +1,6 @@
 'use client';
 
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,7 +27,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { IPost } from '@/types/post.type';
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const locale = useLocale();
@@ -269,5 +270,13 @@ export default function DashboardPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute page="dashboard">
+      <DashboardPageContent />
+    </ProtectedRoute>
   );
 }

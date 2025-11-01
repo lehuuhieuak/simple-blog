@@ -35,10 +35,10 @@ export interface CrudDialogState<T> {
  * return (
  *   <>
  *     <Dialog open={dialogs.isCreateOpen} onOpenChange={dialogs.setIsCreateOpen}>
- *       {/* Create form */}
+ *       //Create form
  *     </Dialog>
  *     <Dialog open={dialogs.isEditOpen} onOpenChange={dialogs.setIsEditOpen}>
- *       {/* Edit form - use dialogs.editingItem */}
+ *       //Edit form - use dialogs.editingItem 
  *     </Dialog>
  *   </>
  * );

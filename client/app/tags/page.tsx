@@ -7,9 +7,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCreateTag, useDeleteTag, useTags, useUpdateTag } from '@/hooks/api/tags';
 import { useCrudDialogsWithFilter } from '@/hooks/factory';
+import { usePermissions } from '@/hooks/usePermissions';
 import { tagSchema, type TagInput } from '@/lib/validations';
 import { ITag } from '@/types/tag.type';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,7 +36,7 @@ const COLORS = [
   '#14B8A6', '#F43F5E', '#8B5A2B', '#059669', '#DC2626'
 ];
 
-export default function TagsManagePage() {
+function TagsManagePageContent() {
   const t = useTranslations('pages.tags');
   const tc = useTranslations('common');
 
@@ -466,5 +468,13 @@ export default function TagsManagePage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function TagsPage() {
+  return (
+    <ProtectedRoute page="tags">
+      <TagsManagePageContent />
+    </ProtectedRoute>
   );
 }
