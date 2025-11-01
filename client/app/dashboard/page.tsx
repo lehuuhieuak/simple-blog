@@ -9,13 +9,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyPosts, useDeletePost } from '@/hooks/useApi';
+import { useCrudDialogsWithFilter } from '@/hooks/factory';
 import { Edit, Eye, PenTool, Plus, Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import type { IPost } from '@/types/post.type';
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -23,8 +32,15 @@ export default function DashboardPage() {
   const locale = useLocale();
   const t = useTranslations('dashboard');
   const tPages = useTranslations('pages.dashboard');
+  const tc = useTranslations('common');
 
-  const { data: postsData, isLoading: postsLoading, error } = useMyPosts(1, 50);
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  // Factory hook for dialog state management
+  const dialogs = useCrudDialogsWithFilter<IPost>('');
+
+  const { data: postsData, isLoading: postsLoading, error } = useMyPosts(page, limit);
   const deletePostMutation = useDeletePost();
 
   useEffect(() => {
@@ -34,13 +50,16 @@ export default function DashboardPage() {
     }
   }, [user, authLoading, router, locale]);
 
-  const handleDelete = async (slug: string) => {
-    if (!confirm(t('postActions.confirmDelete'))) return;
+  const handleDeletePost = async () => {
+    if (!dialogs.deleteConfirmId) return;
 
     try {
-      await deletePostMutation.mutateAsync(slug);
+      await deletePostMutation.mutateAsync(dialogs.deleteConfirmId as string);
+      toast.success(t('postActions.confirmDelete') + ' removed');
+      dialogs.closeDeleteConfirm();
     } catch (error) {
       console.error('Error deleting post:', error);
+      toast.error('Failed to delete post');
     }
   };
 
@@ -185,7 +204,7 @@ export default function DashboardPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleDelete(post.slug)}
+                        onClick={() => dialogs.openDeleteConfirm(post.slug)}
                         className="text-red-600 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
@@ -196,9 +215,59 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             ))}
+
+            {/* Pagination */}
+            {postsData && postsData.pagination.total > 1 && (
+              <div className="flex items-center justify-center space-x-2 mt-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1}
+                >
+                  {tc('previous')}
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {page} / {postsData.pagination.total}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setPage(page + 1)}
+                  disabled={page === postsData.pagination.total}
+                >
+                  {tc('next')}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={dialogs.deleteConfirmId !== null} onOpenChange={() => dialogs.closeDeleteConfirm()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Post</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground">
+            Are you sure you want to delete this post? This action cannot be undone.
+          </p>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              variant="outline"
+              onClick={dialogs.closeDeleteConfirm}
+            >
+              {tc('cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeletePost}
+              disabled={deletePostMutation.isPending}
+            >
+              {deletePostMutation.isPending ? 'Deleting...' : tc('delete')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
