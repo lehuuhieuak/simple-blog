@@ -14,10 +14,22 @@
     "published": "Published",
     "home": "Home",
     "back": "Back",
+    "backToHome": "Back to Home",
     "next": "Next",
     "previous": "Previous",
     "search": "Search",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "clear": "Clear",
+    "clearFilters": "Clear Filters",
+    "clearSearch": "Clear Search",
+    "title": "Title",
+    "content": "Content",
+    "tags": "Tags",
+    "status": "Status",
+    "users": "Users",
+    "readTime": "{minutes} min read",
+    "errorLoading": "Error loading {item}: {error}",
+    "noData": "No {item} found"
   },
   "nav": {
     "home": "Home",
@@ -26,7 +38,8 @@
     "login": "Login",
     "logout": "Logout",
     "signup": "Sign Up",
-    "profile": "Profile"
+    "profile": "Profile",
+    "tags": "Tags"
   },
   "auth": {
     "login": {
@@ -70,6 +83,7 @@
     "posts": {
       "title": "Latest Posts",
       "loading": "Loading posts...",
+      "error": "Error loading posts: {error}",
       "noPosts": {
         "title": "No posts yet",
         "subtitle": "Be the first to share your knowledge with the community!",
@@ -132,7 +146,9 @@
       "notFound": "Post not found"
     },
     "card": {
-      "readMore": "Read more"
+      "readMore": "Read more",
+      "published": "Published",
+      "draft": "Draft"
     },
     "editor": {
       "preview": "Preview",
@@ -156,5 +172,156 @@
     "passwordMin": "Password must be at least 6 characters",
     "usernameMin": "Username must be at least 3 characters",
     "usernameMax": "Username must be less than 20 characters"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language",
+      "english": "English",
+      "vietnamese": "Tiếng Việt",
+      "choose": "Choose language..."
+    },
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "choose": "Choose theme..."
+    }
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "description": "The page you're looking for doesn't exist.",
+    "button": "Go Home"
+  },
+  "globalError": {
+    "title": "Something went wrong!",
+    "button": "Try again"
+  },
+  "pages": {
+    "dashboard": {
+      "loadingDashboard": "Loading dashboard...",
+      "stats": {
+        "totalPosts": "Total Posts"
+      }
+    },
+    "createPost": {
+      "loading": "Loading...",
+      "tagsUnavailable": "No tags available. Create some tags first.",
+      "contentPlaceholder": "Write your post content..."
+    },
+    "editPost": {
+      "loading": "Loading...",
+      "errorLoading": "Error loading post: {error}",
+      "notFound": "Post not found",
+      "currentStatusPublished": "Current status: This post is published and visible to everyone",
+      "currentStatusDraft": "This post is saved as a draft",
+      "contentPlaceholder": "Write your post content..."
+    },
+    "tags": {
+      "loadingTags": "Loading tags...",
+      "errorLoading": "Error loading tags: {error}",
+      "title": "Tag Management",
+      "subtitle": "Create, edit, and organize your blog tags",
+      "createButton": "Create Tag",
+      "createTitle": "Create New Tag",
+      "tagNamePlaceholder": "Enter tag name",
+      "tagDescriptionPlaceholder": "Enter tag description (optional)",
+      "colorLabel": "Color",
+      "creatingButton": "Creating...",
+      "viewPostsButton": "View Posts",
+      "noTags": "No tags found",
+      "noTagsYet": "No tags yet",
+      "searchCleared": "Clear Search",
+      "paginationText": "Page {currentPage} of {total}",
+      "editTitle": "Edit Tag",
+      "updatingButton": "Updating...",
+      "updateButton": "Update Tag",
+      "deleteTitle": "Delete Tag",
+      "deleteConfirmation": "Are you sure you want to delete this tag? This action cannot be undone.",
+      "deletingButton": "Deleting..."
+    },
+    "users": {
+      "loadingUsers": "Loading users...",
+      "errorLoading": "Error loading users: {error}",
+      "title": "User Management",
+      "createButton": "Create User",
+      "createTitle": "Create New User",
+      "creatingButton": "Creating...",
+      "filtersTitle": "Filters",
+      "searchLabel": "Search (Username or Email)",
+      "searchPlaceholder": "Search users...",
+      "emailFilterLabel": "Email Filter",
+      "emailFilterPlaceholder": "Filter by email...",
+      "clearFiltersButton": "Clear Filters",
+      "usersTitle": "Users ({count})",
+      "noUsers": "No users found",
+      "idBadge": "ID: {id}",
+      "createdMeta": "Created: {date}",
+      "updatedMeta": "Updated: {date}",
+      "paginationText": "Page {page} of {total}",
+      "editTitle": "Edit User",
+      "newPasswordLabel": "New Password (optional)",
+      "newPasswordPlaceholder": "Leave empty to keep current password",
+      "updatingButton": "Updating...",
+      "updateButton": "Update"
+    }
+  },
+  "postDetail": {
+    "loadingPost": "Loading post...",
+    "errorLoading": "Error loading post: {error}",
+    "backButton": "Back to Home",
+    "notFoundTitle": "Post Not Found",
+    "notFoundDescription": "The post you're looking for doesn't exist.",
+    "backToPostsButton": "Back to Posts"
+  },
+  "forms": {
+    "createPostForm": {
+      "title": "Create New Post",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter post title...",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write your post content in Markdown...",
+      "contentHelper": "You can use Markdown syntax for formatting.",
+      "loadingTags": "Loading tags...",
+      "selectedTags": "Selected tags:",
+      "statusLabel": "Status",
+      "statusPlaceholder": "Select status",
+      "saveDraft": "Save as Draft",
+      "publishOption": "Publish",
+      "savingButton": "Saving...",
+      "publishButton": "Publish",
+      "saveDraftButton": "Save Draft",
+      "cancelButton": "Cancel",
+      "error": "Error: {error}"
+    },
+    "editPostForm": {
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter your post title...",
+      "tagsLabel": "Tags",
+      "tagsUnavailable": "No tags available. Create some tags first.",
+      "loadingTags": "Loading tags...",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write your post content...",
+      "statusLabel": "Status",
+      "published": "Published",
+      "draft": "Draft",
+      "cancelButton": "Cancel",
+      "savingButton": "Saving...",
+      "saveDraftButton": "Save as Draft",
+      "publishingButton": "Publishing...",
+      "publishButton": "Publish",
+      "error": "Error: {error}"
+    },
+    "lexicalEditor": {
+      "label": "Content (Rich Text)",
+      "editButton": "Edit",
+      "splitButton": "Split",
+      "previewButton": "Preview",
+      "placeholder": "Write your post content...",
+      "previewEmpty": "Nothing to preview...",
+      "editorLabel": "Editor",
+      "previewLabel": "Preview"
+    }
   }
 }

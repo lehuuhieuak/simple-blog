@@ -14,10 +14,22 @@
     "published": "Đã xuất bản",
     "home": "Trang chủ",
     "back": "Quay lại",
+    "backToHome": "Quay lại trang chủ",
     "next": "Tiếp theo",
     "previous": "Trước",
     "search": "Tìm kiếm",
-    "welcome": "Chào mừng"
+    "welcome": "Chào mừng",
+    "clear": "Xóa",
+    "clearFilters": "Xóa bộ lọc",
+    "clearSearch": "Xóa tìm kiếm",
+    "title": "Tiêu đề",
+    "content": "Nội dung",
+    "tags": "Thẻ",
+    "status": "Trạng thái",
+    "users": "Người dùng",
+    "readTime": "Thời gian đọc {minutes} phút",
+    "errorLoading": "Lỗi khi tải {item}: {error}",
+    "noData": "Không tìm thấy {item}"
   },
   "nav": {
     "home": "Trang chủ",
@@ -26,7 +38,8 @@
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "signup": "Đăng ký",
-    "profile": "Hồ sơ"
+    "profile": "Hồ sơ",
+    "tags": "Thẻ"
   },
   "auth": {
     "login": {
@@ -70,6 +83,7 @@
     "posts": {
       "title": "Bài viết mới nhất",
       "loading": "Đang tải bài viết...",
+      "error": "Lỗi khi tải bài viết: {error}",
       "noPosts": {
         "title": "Chưa có bài viết nào",
         "subtitle": "Hãy là người đầu tiên chia sẻ kiến thức của bạn với cộng đồng!",
@@ -132,7 +146,9 @@
       "notFound": "Không tìm thấy bài viết"
     },
     "card": {
-      "readMore": "Đọc thêm"
+      "readMore": "Đọc thêm",
+      "published":"Đã xuất bản",
+      "draft":"Bản nháp"
     },
     "editor": {
       "preview": "Xem trước",
@@ -156,5 +172,156 @@
     "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
     "usernameMin": "Tên người dùng phải có ít nhất 3 ký tự",
     "usernameMax": "Tên người dùng phải ít hơn 20 ký tự"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "language": {
+      "title": "Ngôn ngữ",
+      "english": "English",
+      "vietnamese": "Tiếng Việt",
+      "choose": "Chọn ngôn ngữ..."
+    },
+    "theme": {
+      "title": "Giao diện",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Hệ thống",
+      "choose": "Chọn giao diện..."
+    }
+  },
+  "notFound": {
+    "title": "404 - Không tìm thấy trang",
+    "description": "Trang bạn đang tìm không tồn tại.",
+    "button": "Về trang chủ"
+  },
+  "globalError": {
+    "title": "Đã xảy ra sự cố!",
+    "button": "Thử lại"
+  },
+  "pages": {
+    "dashboard": {
+      "loadingDashboard": "Đang tải bảng điều khiển...",
+      "stats": {
+        "totalPosts": "Tổng số bài viết"
+      }
+    },
+    "createPost": {
+      "loading": "Đang tải...",
+      "tagsUnavailable": "Không có thẻ nào. Vui lòng tạo thẻ trước.",
+      "contentPlaceholder": "Viết nội dung bài viết của bạn..."
+    },
+    "editPost": {
+      "loading": "Đang tải...",
+      "errorLoading": "Lỗi khi tải bài viết: {error}",
+      "notFound": "Không tìm thấy bài viết",
+      "currentStatusPublished": "Trạng thái hiện tại: Bài viết này đã được xuất bản và hiển thị cho tất cả mọi người",
+      "currentStatusDraft": "Bài viết này được lưu dưới dạng bản nháp",
+      "contentPlaceholder": "Viết nội dung bài viết của bạn..."
+    },
+    "tags": {
+      "loadingTags": "Đang tải thẻ...",
+      "errorLoading": "Lỗi khi tải thẻ: {error}",
+      "title": "Quản lý thẻ",
+      "subtitle": "Tạo, chỉnh sửa và tổ chức các thẻ blog của bạn",
+      "createButton": "Tạo thẻ",
+      "createTitle": "Tạo thẻ mới",
+      "tagNamePlaceholder": "Nhập tên thẻ",
+      "tagDescriptionPlaceholder": "Nhập mô tả thẻ (tùy chọn)",
+      "colorLabel": "Màu sắc",
+      "creatingButton": "Đang tạo...",
+      "viewPostsButton": "Xem bài viết",
+      "noTags": "Không tìm thấy thẻ nào",
+      "noTagsYet": "Chưa có thẻ nào",
+      "searchCleared": "Xóa tìm kiếm",
+      "paginationText": "Trang {currentPage} / {total}",
+      "editTitle": "Chỉnh sửa thẻ",
+      "updatingButton": "Đang cập nhật...",
+      "updateButton": "Cập nhật thẻ",
+      "deleteTitle": "Xóa thẻ",
+      "deleteConfirmation": "Bạn có chắc chắn muốn xóa thẻ này? Hành động này không thể hoàn tác.",
+      "deletingButton": "Đang xóa..."
+    },
+    "users": {
+      "loadingUsers": "Đang tải người dùng...",
+      "errorLoading": "Lỗi khi tải người dùng: {error}",
+      "title": "Quản lý người dùng",
+      "createButton": "Tạo người dùng",
+      "createTitle": "Tạo người dùng mới",
+      "creatingButton": "Đang tạo...",
+      "filtersTitle": "Bộ lọc",
+      "searchLabel": "Tìm kiếm (Tên người dùng hoặc Email)",
+      "searchPlaceholder": "Tìm kiếm người dùng...",
+      "emailFilterLabel": "Bộ lọc Email",
+      "emailFilterPlaceholder": "Lọc theo email...",
+      "clearFiltersButton": "Xóa bộ lọc",
+      "usersTitle": "Người dùng ({count})",
+      "noUsers": "Không tìm thấy người dùng nào",
+      "idBadge": "ID: {id}",
+      "createdMeta": "Tạo: {date}",
+      "updatedMeta": "Cập nhật: {date}",
+      "paginationText": "Trang {page} / {total}",
+      "editTitle": "Chỉnh sửa người dùng",
+      "newPasswordLabel": "Mật khẩu mới (tùy chọn)",
+      "newPasswordPlaceholder": "Để trống để giữ mật khẩu hiện tại",
+      "updatingButton": "Đang cập nhật...",
+      "updateButton": "Cập nhật"
+    }
+  },
+  "postDetail": {
+    "loadingPost": "Đang tải bài viết...",
+    "errorLoading": "Lỗi khi tải bài viết: {error}",
+    "backButton": "Quay lại trang chủ",
+    "notFoundTitle": "Không tìm thấy bài viết",
+    "notFoundDescription": "Bài viết bạn đang tìm không tồn tại.",
+    "backToPostsButton": "Quay lại danh sách bài viết"
+  },
+  "forms": {
+    "createPostForm": {
+      "title": "Tạo bài viết mới",
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "Nhập tiêu đề bài viết...",
+      "contentLabel": "Nội dung",
+      "contentPlaceholder": "Viết nội dung bài viết bằng Markdown...",
+      "contentHelper": "Bạn có thể sử dụng cú pháp Markdown để định dạng.",
+      "loadingTags": "Đang tải thẻ...",
+      "selectedTags": "Các thẻ được chọn:",
+      "statusLabel": "Trạng thái",
+      "statusPlaceholder": "Chọn trạng thái",
+      "saveDraft": "Lưu làm bản nháp",
+      "publishOption": "Xuất bản",
+      "savingButton": "Đang lưu...",
+      "publishButton": "Xuất bản",
+      "saveDraftButton": "Lưu bản nháp",
+      "cancelButton": "Hủy",
+      "error": "Lỗi: {error}"
+    },
+    "editPostForm": {
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "Nhập tiêu đề bài viết của bạn...",
+      "tagsLabel": "Thẻ",
+      "tagsUnavailable": "Không có thẻ nào. Vui lòng tạo thẻ trước.",
+      "loadingTags": "Đang tải thẻ...",
+      "contentLabel": "Nội dung",
+      "contentPlaceholder": "Viết nội dung bài viết của bạn...",
+      "statusLabel": "Trạng thái",
+      "published": "Đã xuất bản",
+      "draft": "Bản nháp",
+      "cancelButton": "Hủy",
+      "savingButton": "Đang lưu...",
+      "saveDraftButton": "Lưu làm bản nháp",
+      "publishingButton": "Đang xuất bản...",
+      "publishButton": "Xuất bản",
+      "error": "Lỗi: {error}"
+    },
+    "lexicalEditor": {
+      "label": "Nội dung (Văn bản phong phú)",
+      "editButton": "Chỉnh sửa",
+      "splitButton": "Tách",
+      "previewButton": "Xem trước",
+      "placeholder": "Viết nội dung bài viết của bạn...",
+      "previewEmpty": "Không có gì để xem trước...",
+      "editorLabel": "Trình chỉnh sửa",
+      "previewLabel": "Xem trước"
+    }
   }
 }
