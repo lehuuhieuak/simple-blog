@@ -1,5 +1,6 @@
 @import 'tw-animate-css';
 @import 'tailwindcss';
+@import '../styles/lexical.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -34,15 +35,15 @@
 }
 
 .prose code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm;
+  @apply bg-muted px-1 py-0.5 rounded text-sm relative z-0;
 }
 
 .prose pre {
-  @apply bg-muted rounded-lg overflow-x-auto;
+  @apply bg-muted rounded-lg overflow-x-auto relative z-0;
 }
 
 .prose blockquote {
-  @apply border-l-4 border-primary pl-4 italic;
+  @apply border-l-4 border-primary pl-4 italic relative z-0;
 }
 
 .prose ul,
