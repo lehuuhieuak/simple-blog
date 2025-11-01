@@ -27,12 +27,41 @@ func InitializeDatabase() error {
 			title VARCHAR(255) NOT NULL,
 			slug VARCHAR(255) UNIQUE NOT NULL,
 			content TEXT NOT NULL,
-			excerpt TEXT,
 			author_id INTEGER NOT NULL,
 			published BOOLEAN DEFAULT FALSE,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	// Create tags table
+	_, err = DB.Exec(`
+		CREATE TABLE IF NOT EXISTS tags (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR(255) NOT NULL,
+			slug VARCHAR(255) UNIQUE NOT NULL,
+			description VARCHAR(255) NOT NULL,
+			color VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+	if err != nil {
+		return err
+	}
+
+	// Create post_tags table
+	_, err = DB.Exec(`
+		CREATE TABLE IF NOT EXISTS post_tags (
+			id SERIAL PRIMARY KEY,
+			post_id SERIAL NOT NULL,
+			tag_id SERIAL NOT NULL,
+			FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+		    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 		)
 	`)
 	if err != nil {
@@ -93,5 +122,13 @@ func InitializeDatabase() error {
 	}
 
 	log.Println("Database tables initialized successfully")
+
+	// Seed default tags
+	err = SeedDefaultTags()
+	if err != nil {
+		log.Printf("Warning: Failed to seed default tags: %v", err)
+		// Don't return error as this is not critical
+	}
+
 	return nil
 }

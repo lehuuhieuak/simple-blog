@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"blog-api/models"
+	"blog-api/internal/domain"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -26,7 +26,7 @@ func VerifyPassword(password, hash string) bool {
 	return err == nil
 }
 
-func GenerateToken(user models.UserResponse) (string, error) {
+func GenerateToken(user domain.UserResponse) (string, error) {
 	claims := jwt.MapClaims{
 		"id":       user.ID,
 		"email":    user.Email,
@@ -39,7 +39,7 @@ func GenerateToken(user models.UserResponse) (string, error) {
 	return token.SignedString(jwtSecret)
 }
 
-func ValidateToken(tokenString string) (*models.UserResponse, error) {
+func ValidateToken(tokenString string) (*domain.UserResponse, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -52,8 +52,19 @@ func ValidateToken(tokenString string) (*models.UserResponse, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		user := &models.UserResponse{
-			ID:       int(claims["id"].(float64)),
+		// Safely convert ID to int
+		var userID int
+		switch v := claims["id"].(type) {
+		case float64:
+			userID = int(v)
+		case int:
+			userID = v
+		default:
+			return nil, errors.New("invalid user ID in token")
+		}
+
+		user := &domain.UserResponse{
+			ID:       userID,
 			Email:    claims["email"].(string),
 			Username: claims["username"].(string),
 		}

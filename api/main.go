@@ -1,3 +1,12 @@
+// @title Blog API
+// @version 1.0
+// @description A blog API with authentication and CRUD operations for posts and tags
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 package main
 
 import (
@@ -5,13 +14,18 @@ import (
 
 	"blog-api/config"
 	"blog-api/database"
-	"blog-api/handlers"
-	"blog-api/middleware"
+	_ "blog-api/docs"
+	"blog-api/internal/handler"
+	"blog-api/internal/middleware"
+	"blog-api/internal/repository"
+	"blog-api/internal/service"
 	"blog-api/utils"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -32,6 +46,24 @@ func main() {
 	}
 	defer database.Close()
 
+	// Initialize repositories
+	userRepo := repository.NewUserRepository(database.DB)
+	postRepo := repository.NewPostRepository(database.DB)
+	tagRepo := repository.NewTagRepository(database.DB)
+
+	// Initialize services
+	authService := service.NewAuthService(userRepo)
+	userService := service.NewUserService(userRepo)
+	postService := service.NewPostService(postRepo, tagRepo)
+	tagService := service.NewTagService(tagRepo)
+
+	// Initialize handlers
+	authHandler := handler.NewAuthHandler(authService)
+	userHandler := handler.NewUserHandler(userService)
+	postHandler := handler.NewPostHandler(postService)
+	tagHandler := handler.NewTagHandler(tagService, postService)
+	dbHandler := handler.NewDatabaseHandler()
+
 	// Initialize Gin router
 	r := gin.Default()
 
@@ -44,6 +76,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	// Swagger documentation
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Health check
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
@@ -53,29 +88,50 @@ func main() {
 	api := r.Group("/api")
 	{
 		// Database initialization
-		api.POST("/init-db", handlers.InitDatabase)
+		api.POST("/init-db", dbHandler.InitDatabase)
 
 		// Auth routes
 		auth := api.Group("/auth")
 		{
-			auth.POST("/register", handlers.Register)
-			auth.POST("/login", handlers.Login)
-			auth.GET("/me", middleware.AuthMiddleware(), handlers.GetMe)
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+			auth.GET("/me", middleware.AuthMiddleware(), authHandler.GetMe)
 		}
 
 		// Posts routes
 		posts := api.Group("/posts")
 		{
-			posts.GET("", handlers.GetPosts)
-			posts.GET("/:slug", handlers.GetPostBySlug)
-			posts.POST("", middleware.AuthMiddleware(), handlers.CreatePost)
-			posts.PUT("/:slug", middleware.AuthMiddleware(), handlers.UpdatePost)
-			posts.DELETE("/:slug", middleware.AuthMiddleware(), handlers.DeletePost)
-			posts.GET("/my-posts", middleware.AuthMiddleware(), handlers.GetMyPosts)
+			posts.GET("", postHandler.GetPosts)
+			posts.GET("/:slug", postHandler.GetPostBySlug)
+			posts.POST("", middleware.AuthMiddleware(), postHandler.CreatePost)
+			posts.PUT("/:slug", middleware.AuthMiddleware(), postHandler.UpdatePost)
+			posts.DELETE("/:slug", middleware.AuthMiddleware(), postHandler.DeletePost)
+			posts.GET("/my-posts", middleware.AuthMiddleware(), postHandler.GetMyPosts)
+		}
+
+		// Tags routes
+		tags := api.Group("/tags")
+		{
+			tags.GET("", tagHandler.GetTags)
+			tags.POST("", middleware.AuthMiddleware(), tagHandler.CreateTag)
+			tags.PUT("/:id", middleware.AuthMiddleware(), tagHandler.UpdateTag)
+			tags.DELETE("/:id", middleware.AuthMiddleware(), tagHandler.DeleteTag)
+			tags.GET("/:slug/posts", tagHandler.GetPostsByTag)
+		}
+
+		// Users routes
+		users := api.Group("/users")
+		{
+			users.GET("", middleware.AuthMiddleware(), userHandler.GetUsers)
+			users.GET("/:id", middleware.AuthMiddleware(), userHandler.GetUser)
+			users.POST("", middleware.AuthMiddleware(), userHandler.CreateUser)
+			users.PUT("/:id", middleware.AuthMiddleware(), userHandler.UpdateUser)
+			users.DELETE("/:id", middleware.AuthMiddleware(), userHandler.DeleteUser)
 		}
 	}
 
 	log.Printf("Server starting on port %s", cfg.Port)
+	log.Printf("Swagger documentation available at: http://localhost:%s/swagger/index.html", cfg.Port)
 	if err := r.Run(":" + cfg.Port); err != nil {
 		log.Fatal("Failed to start server:", err)
 	}
