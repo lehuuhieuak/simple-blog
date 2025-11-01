@@ -1,0 +1,282 @@
+name: Application Monitoring
+
+on:
+  schedule:
+    # Health checks every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [production, staging]
+    
+    steps:
+    - name: Set environment variables
+      run: |
+        if [ "${{ matrix.environment }}" = "production" ]; then
+          echo "DOMAIN=${{ secrets.PRODUCTION_DOMAIN }}" >> $GITHUB_ENV
+          echo "EXPECTED_STATUS=200" >> $GITHUB_ENV
+        else
+          echo "DOMAIN=${{ secrets.STAGING_DOMAIN }}" >> $GITHUB_ENV
+          echo "EXPECTED_STATUS=200" >> $GITHUB_ENV
+        fi
+    
+    - name: Check frontend health
+      run: |
+        echo "Checking frontend health for ${{ matrix.environment }}"
+        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }})
+        echo "Frontend response: $RESPONSE"
+        if [ "$RESPONSE" != "${{ env.EXPECTED_STATUS }}" ]; then
+          echo "Frontend health check failed"
+          exit 1
+        fi
+    
+    - name: Check API health
+      run: |
+        echo "Checking API health for ${{ matrix.environment }}"
+        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/api/health)
+        echo "API response: $RESPONSE"
+        if [ "$RESPONSE" != "${{ env.EXPECTED_STATUS }}" ]; then
+          echo "API health check failed"
+          exit 1
+        fi
+    
+    - name: Check API endpoints
+      run: |
+        echo "Testing API endpoints for ${{ matrix.environment }}"
+        
+        # Test posts endpoint
+        POSTS_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/api/posts)
+        echo "Posts endpoint response: $POSTS_RESPONSE"
+        if [ "$POSTS_RESPONSE" != "200" ]; then
+          echo "Posts endpoint health check failed"
+          exit 1
+        fi
+    
+    - name: Check SSL certificate
+      run: |
+        echo "Checking SSL certificate for ${{ matrix.environment }}"
+        CERT_EXPIRY=$(echo | openssl s_client -servername ${{ env.DOMAIN }} -connect ${{ env.DOMAIN }}:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | cut -d= -f2)
+        CERT_EXPIRY_EPOCH=$(date -d "$CERT_EXPIRY" +%s)
+        CURRENT_EPOCH=$(date +%s)
+        DAYS_UNTIL_EXPIRY=$(( ($CERT_EXPIRY_EPOCH - $CURRENT_EPOCH) / 86400 ))
+        
+        echo "SSL certificate expires in $DAYS_UNTIL_EXPIRY days"
+        
+        if [ $DAYS_UNTIL_EXPIRY -lt 30 ]; then
+          echo "SSL certificate expires soon!"
+          echo "CERT_WARNING=true" >> $GITHUB_ENV
+        fi
+    
+    - name: Performance test
+      run: |
+        echo "Running performance test for ${{ matrix.environment }}"
+        
+        # Test response time
+        RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" https://${{ env.DOMAIN }})
+        echo "Response time: ${RESPONSE_TIME}s"
+        
+        # Check if response time is acceptable (< 3 seconds)
+        if (( $(echo "$RESPONSE_TIME > 3.0" | bc -l) )); then
+          echo "Response time too slow: ${RESPONSE_TIME}s"
+          echo "PERFORMANCE_WARNING=true" >> $GITHUB_ENV
+        fi
+    
+    - name: Notify health check failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: |
+          🚨 Health check failed for ${{ matrix.environment }}!
+          Domain: ${{ env.DOMAIN }}
+          Time: $(date)
+          Please check the application immediately.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
+    - name: Notify SSL certificate warning
+      if: env.CERT_WARNING == 'true'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: warning
+        text: |
+          ⚠️ SSL certificate warning for ${{ matrix.environment }}!
+          Domain: ${{ env.DOMAIN }}
+          Certificate expires soon. Please renew.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    
+    - name: Notify performance warning
+      if: env.PERFORMANCE_WARNING == 'true'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: warning
+        text: |
+          ⚠️ Performance warning for ${{ matrix.environment }}!
+          Domain: ${{ env.DOMAIN }}
+          Response time is slower than expected.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  resource-monitoring:
+    name: Resource Monitoring
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/15 * * * *'
+    
+    strategy:
+      matrix:
+        environment: [production, staging]
+    
+    steps:
+    - name: Check server resources
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ matrix.environment == 'production' && secrets.PRODUCTION_HOST || secrets.STAGING_HOST }}
+        username: ${{ matrix.environment == 'production' && secrets.PRODUCTION_USER || secrets.STAGING_USER }}
+        key: ${{ matrix.environment == 'production' && secrets.PRODUCTION_SSH_KEY || secrets.STAGING_SSH_KEY }}
+        script: |
+          echo "=== Resource Monitoring for ${{ matrix.environment }} ==="
+          
+          # Check disk usage
+          echo "Disk Usage:"
+          df -h | grep -E '^/dev/'
+          
+          # Check memory usage
+          echo -e "\nMemory Usage:"
+          free -h
+          
+          # Check CPU usage
+          echo -e "\nCPU Usage:"
+          top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1
+          
+          # Check Docker container status
+          echo -e "\nDocker Container Status:"
+          docker-compose ps
+          
+          # Check Docker container resource usage
+          echo -e "\nDocker Resource Usage:"
+          docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+          
+          # Check log file sizes
+          echo -e "\nLog File Sizes:"
+          du -sh /var/log/nginx/* 2>/dev/null || echo "No nginx logs found"
+          
+          # Check for high disk usage
+          DISK_USAGE=$(df / | awk 'NR==2 {print $5}' | cut -d'%' -f1)
+          if [ $DISK_USAGE -gt 80 ]; then
+            echo "HIGH_DISK_USAGE=true" >> $GITHUB_ENV
+            echo "DISK_USAGE_PERCENT=$DISK_USAGE" >> $GITHUB_ENV
+          fi
+          
+          # Check for high memory usage
+          MEMORY_USAGE=$(free | awk 'NR==2{printf "%.0f", $3*100/$2}')
+          if [ $MEMORY_USAGE -gt 80 ]; then
+            echo "HIGH_MEMORY_USAGE=true" >> $GITHUB_ENV
+            echo "MEMORY_USAGE_PERCENT=$MEMORY_USAGE" >> $GITHUB_ENV
+          fi
+    
+    - name: Notify high resource usage
+      if: env.HIGH_DISK_USAGE == 'true' || env.HIGH_MEMORY_USAGE == 'true'
+      uses: 8398a7/action-slack@v3
+      with:
+        status: warning
+        text: |
+          ⚠️ High resource usage detected on ${{ matrix.environment }}!
+          ${{ env.HIGH_DISK_USAGE == 'true' && format('Disk usage: {0}%', env.DISK_USAGE_PERCENT) || '' }}
+          ${{ env.HIGH_MEMORY_USAGE == 'true' && format('Memory usage: {0}%', env.MEMORY_USAGE_PERCENT) || '' }}
+          Please investigate and take action.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  database-monitoring:
+    name: Database Monitoring
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/15 * * * *'
+    
+    strategy:
+      matrix:
+        environment: [production, staging]
+    
+    steps:
+    - name: Check database health
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ matrix.environment == 'production' && secrets.PRODUCTION_HOST || secrets.STAGING_HOST }}
+        username: ${{ matrix.environment == 'production' && secrets.PRODUCTION_USER || secrets.STAGING_USER }}
+        key: ${{ matrix.environment == 'production' && secrets.PRODUCTION_SSH_KEY || secrets.STAGING_SSH_KEY }}
+        script: |
+          cd /opt/blog-app
+          
+          echo "=== Database Monitoring for ${{ matrix.environment }} ==="
+          
+          # Check database connectivity
+          echo "Database Connectivity:"
+          docker-compose exec -T mssql /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "$(cat secrets/db_password.txt)" \
+            -Q "SELECT @@VERSION" || echo "Database connection failed"
+          
+          # Check database size
+          echo -e "\nDatabase Size:"
+          docker-compose exec -T mssql /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "$(cat secrets/db_password.txt)" \
+            -Q "SELECT 
+                  DB_NAME(database_id) AS DatabaseName,
+                  CAST(SUM(size) * 8.0 / 1024 AS DECIMAL(10,2)) AS SizeMB
+                FROM sys.master_files 
+                WHERE database_id = DB_ID('blog')
+                GROUP BY database_id"
+          
+          # Check active connections
+          echo -e "\nActive Connections:"
+          docker-compose exec -T mssql /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "$(cat secrets/db_password.txt)" \
+            -Q "SELECT COUNT(*) as ActiveConnections FROM sys.dm_exec_sessions WHERE is_user_process = 1"
+          
+          # Check for blocking processes
+          echo -e "\nBlocking Processes:"
+          docker-compose exec -T mssql /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "$(cat secrets/db_password.txt)" \
+            -Q "SELECT blocking_session_id, session_id, wait_type, wait_time, wait_resource 
+                FROM sys.dm_exec_requests 
+                WHERE blocking_session_id <> 0"
+    
+    - name: Check database performance
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ matrix.environment == 'production' && secrets.PRODUCTION_HOST || secrets.STAGING_HOST }}
+        username: ${{ matrix.environment == 'production' && secrets.PRODUCTION_USER || secrets.STAGING_USER }}
+        key: ${{ matrix.environment == 'production' && secrets.PRODUCTION_SSH_KEY || secrets.STAGING_SSH_KEY }}
+        script: |
+          cd /opt/blog-app
+          
+          # Check slow queries (if any)
+          echo "Checking for slow queries..."
+          docker-compose exec -T mssql /opt/mssql-tools/bin/sqlcmd \
+            -S localhost -U sa -P "$(cat secrets/db_password.txt)" \
+            -Q "SELECT TOP 5 
+                  total_elapsed_time/execution_count as avg_elapsed_time,
+                  execution_count,
+                  SUBSTRING(st.text, (qs.statement_start_offset/2)+1, 
+                    ((CASE qs.statement_end_offset 
+                      WHEN -1 THEN DATALENGTH(st.text)
+                      ELSE qs.statement_end_offset 
+                    END - qs.statement_start_offset)/2) + 1) AS statement_text
+                FROM sys.dm_exec_query_stats qs
+                CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) st
+                WHERE qs.total_elapsed_time/execution_count > 1000000
+                ORDER BY avg_elapsed_time DESC"

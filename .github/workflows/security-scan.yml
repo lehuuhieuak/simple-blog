@@ -1,0 +1,125 @@
+name: Security Scan
+
+on:
+  schedule:
+    # Run security scans daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'api/**'
+      - 'client/**'
+      - 'docker-compose*.yml'
+      - 'Dockerfile*'
+
+jobs:
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        component: [api, client]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Snyk to check for vulnerabilities (Go)
+      if: matrix.component == 'api'
+      uses: snyk/actions/golang@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=medium --file=api/go.mod
+    
+    - name: Run Snyk to check for vulnerabilities (Node.js)
+      if: matrix.component == 'client'
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=medium --file=client/package.json
+    
+    - name: Upload result to GitHub Code Scanning
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: snyk.sarif
+
+  container-scan:
+    name: Container Image Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Build API image for scanning
+      run: docker build -t blog-api:scan ./api
+    
+    - name: Build Client image for scanning
+      run: docker build -t blog-client:scan ./client
+    
+    - name: Run Trivy vulnerability scanner on API image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'blog-api:scan'
+        format: 'sarif'
+        output: 'trivy-api-results.sarif'
+    
+    - name: Run Trivy vulnerability scanner on Client image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'blog-client:scan'
+        format: 'sarif'
+        output: 'trivy-client-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-api-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-client-results.sarif'
+
+  secrets-scan:
+    name: Secrets Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Run GitLeaks
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  infrastructure-scan:
+    name: Infrastructure as Code Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: .
+        framework: dockerfile,docker_compose
+        output_format: sarif
+        output_file_path: checkov-results.sarif
+    
+    - name: Upload Checkov scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: checkov-results.sarif
