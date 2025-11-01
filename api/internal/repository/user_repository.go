@@ -1,11 +1,11 @@
 package repository
 
 import (
+	"blog-api/internal/domain"
+	"blog-api/internal/dto"
 	"database/sql"
 	"fmt"
 	"strings"
-	"blog-api/internal/domain"
-	"blog-api/internal/dto"
 )
 
 // UserRepository defines the interface for user data operations
@@ -44,9 +44,9 @@ func (r *userRepository) Create(user *domain.User) (*domain.User, error) {
 // GetByEmail retrieves a user by email
 func (r *userRepository) GetByEmail(email string) (*domain.User, error) {
 	user := &domain.User{}
-	query := `SELECT id, email, username, password, created_at, updated_at FROM users WHERE email = $1`
+	query := `SELECT id, email, username, password, created_at, updated_at, is_admin FROM users WHERE email = $1`
 	err := r.db.QueryRow(query, email).
-		Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+		Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.IsAdmin)
 	if err != nil {
 		return nil, err
 	}
@@ -80,37 +80,37 @@ func (r *userRepository) ExistsByEmailOrUsername(email, username string) (bool, 
 func (r *userRepository) GetAll(filter *dto.UserFilter) ([]domain.User, int, error) {
 	var users []domain.User
 	var total int
-	
+
 	// Build WHERE clause for filtering
 	var conditions []string
 	var args []interface{}
 	argIndex := 1
-	
+
 	if filter.Search != "" {
 		conditions = append(conditions, fmt.Sprintf("(username ILIKE $%d OR email ILIKE $%d)", argIndex, argIndex+1))
 		searchPattern := "%" + filter.Search + "%"
 		args = append(args, searchPattern, searchPattern)
 		argIndex += 2
 	}
-	
+
 	if filter.Email != "" {
 		conditions = append(conditions, fmt.Sprintf("email ILIKE $%d", argIndex))
 		args = append(args, "%"+filter.Email+"%")
 		argIndex++
 	}
-	
+
 	whereClause := ""
 	if len(conditions) > 0 {
 		whereClause = "WHERE " + strings.Join(conditions, " AND ")
 	}
-	
+
 	// Get total count
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM users %s", whereClause)
 	err := r.db.QueryRow(countQuery, args...).Scan(&total)
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	// Calculate pagination
 	if filter.Page < 1 {
 		filter.Page = 1
@@ -118,9 +118,9 @@ func (r *userRepository) GetAll(filter *dto.UserFilter) ([]domain.User, int, err
 	if filter.Limit < 1 {
 		filter.Limit = 10
 	}
-	
+
 	offset := (filter.Page - 1) * filter.Limit
-	
+
 	// Get users with pagination
 	query := fmt.Sprintf(`
 		SELECT id, email, username, password, created_at, updated_at 
@@ -128,25 +128,25 @@ func (r *userRepository) GetAll(filter *dto.UserFilter) ([]domain.User, int, err
 		ORDER BY created_at DESC 
 		LIMIT $%d OFFSET $%d
 	`, whereClause, argIndex, argIndex+1)
-	
+
 	args = append(args, filter.Limit, offset)
-	
+
 	rows, err := r.db.Query(query, args...)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer rows.Close()
-	
+
 	for rows.Next() {
 		var user domain.User
-		err := rows.Scan(&user.ID, &user.Email, &user.Username, &user.Password, 
+		err := rows.Scan(&user.ID, &user.Email, &user.Username, &user.Password,
 			&user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			return nil, 0, err
 		}
 		users = append(users, user)
 	}
-	
+
 	return users, total, nil
 }
 
@@ -155,47 +155,47 @@ func (r *userRepository) Update(id int, user *domain.User) (*domain.User, error)
 	var setParts []string
 	var args []interface{}
 	argIndex := 1
-	
+
 	if user.Email != "" {
 		setParts = append(setParts, fmt.Sprintf("email = $%d", argIndex))
 		args = append(args, user.Email)
 		argIndex++
 	}
-	
+
 	if user.Username != "" {
 		setParts = append(setParts, fmt.Sprintf("username = $%d", argIndex))
 		args = append(args, user.Username)
 		argIndex++
 	}
-	
+
 	if user.Password != "" {
 		setParts = append(setParts, fmt.Sprintf("password = $%d", argIndex))
 		args = append(args, user.Password)
 		argIndex++
 	}
-	
+
 	if len(setParts) == 0 {
 		return r.GetByID(id)
 	}
-	
+
 	query := fmt.Sprintf(`
 		UPDATE users 
 		SET %s 
 		WHERE id = $%d 
 		RETURNING id, email, username, password, created_at, updated_at
 	`, strings.Join(setParts, ", "), argIndex)
-	
+
 	args = append(args, id)
-	
+
 	updatedUser := &domain.User{}
 	err := r.db.QueryRow(query, args...).Scan(
-		&updatedUser.ID, &updatedUser.Email, &updatedUser.Username, 
+		&updatedUser.ID, &updatedUser.Email, &updatedUser.Username,
 		&updatedUser.Password, &updatedUser.CreatedAt, &updatedUser.UpdatedAt)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return updatedUser, nil
 }
 
@@ -206,16 +206,16 @@ func (r *userRepository) Delete(id int) error {
 	if err != nil {
 		return err
 	}
-	
+
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return err
 	}
-	
+
 	if rowsAffected == 0 {
 		return sql.ErrNoRows
 	}
-	
+
 	return nil
 }
 
