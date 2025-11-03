@@ -141,7 +141,7 @@ func (r *postRepository) GetAll(page, limit int) ([]domain.Post, int, error) {
 	}
 	defer rows.Close()
 
-	var posts []domain.Post
+	var posts = []domain.Post{}
 	for rows.Next() {
 		var post domain.Post
 		err := rows.Scan(&post.ID, &post.Title, &post.Slug, &post.Content, &post.AuthorID,
