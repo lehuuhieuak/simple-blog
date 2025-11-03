@@ -32,7 +32,6 @@
     "noData": "No {item} found"
   },
   "nav": {
-    "home": "Home",
     "dashboard": "Dashboard",
     "write": "Write",
     "login": "Login",

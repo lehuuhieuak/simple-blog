@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
   ChartBarIcon,
-  HomeIcon,
   LogOutIcon,
   PenToolIcon,
   TagIcon,
@@ -39,13 +38,6 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <HomeIcon className="h-4 w-4 mr-2" />
-                {t('home')}
-              </Button>
-            </Link>
-
             <SettingsDialog locale={locale} theme={theme} />
 
             {loading ? (
