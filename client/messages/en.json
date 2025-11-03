@@ -39,7 +39,8 @@
     "logout": "Logout",
     "signup": "Sign Up",
     "profile": "Profile",
-    "tags": "Tags"
+    "tags": "Tags",
+    "users": "Users" 
   },
   "auth": {
     "login": {

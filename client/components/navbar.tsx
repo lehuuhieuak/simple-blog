@@ -4,7 +4,14 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
-import { Home, LogOut, PenTool, User, Shield } from 'lucide-react';
+import {
+  ChartBarIcon,
+  HomeIcon,
+  LogOutIcon,
+  PenToolIcon,
+  TagIcon,
+  UsersIcon,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -26,7 +33,7 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
-              <PenTool className="h-6 w-6" />
+              <PenToolIcon className="h-6 w-6" />
               <span className="text-xl font-bold">DevBlog</span>
             </Link>
           </div>
@@ -34,7 +41,7 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
           <div className="flex items-center space-x-4">
             <Link href="/">
               <Button variant="ghost" size="sm">
-                <Home className="h-4 w-4 mr-2" />
+                <HomeIcon className="h-4 w-4 mr-2" />
                 {t('home')}
               </Button>
             </Link>
@@ -52,7 +59,7 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
               <>
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm">
-                    <User className="h-4 w-4 mr-2" />
+                    <ChartBarIcon className="h-4 w-4 mr-2" />
                     {t('dashboard')}
                   </Button>
                 </Link>
@@ -62,14 +69,14 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
                   <>
                     <Link href="/tags">
                       <Button variant="ghost" size="sm">
-                        <Shield className="h-4 w-4 mr-2" />
+                        <TagIcon className="h-4 w-4 mr-2" />
                         {t('tags')}
                       </Button>
                     </Link>
                     <Link href="/users">
                       <Button variant="ghost" size="sm">
-                        <Shield className="h-4 w-4 mr-2" />
-                        Users
+                        <UsersIcon className="h-4 w-4 mr-2" />
+                        {t('users')}
                       </Button>
                     </Link>
                   </>
@@ -77,12 +84,12 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
 
                 <Link href="/create-post">
                   <Button variant="default" size="sm">
-                    <PenTool className="h-4 w-4 mr-2" />
+                    <PenToolIcon className="h-4 w-4 mr-2" />
                     {t('write')}
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" />
+                  <LogOutIcon className="h-4 w-4 mr-2" />
                   {t('logout')}
                 </Button>
                 <span className="text-sm text-muted-foreground">

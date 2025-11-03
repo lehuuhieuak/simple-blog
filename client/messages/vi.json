@@ -39,7 +39,8 @@
     "logout": "Đăng xuất",
     "signup": "Đăng ký",
     "profile": "Hồ sơ",
-    "tags": "Thẻ"
+    "tags": "Thẻ",
+    "users": "Người dùng"
   },
   "auth": {
     "login": {
