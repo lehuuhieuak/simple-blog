@@ -87,11 +87,6 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
                 </Button>
                 <span className="text-sm text-muted-foreground">
                   {user.username}
-                  {isAdmin && (
-                    <span className="ml-2 text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100 px-2 py-0.5 rounded">
-                      Admin
-                    </span>
-                  )}
                 </span>
               </>
             ) : (
