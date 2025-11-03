@@ -14,6 +14,7 @@ import {
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export function Navbar({ locale, theme }: { locale: string; theme: string }) {
   const { user, logout, loading } = useAuth();
@@ -38,8 +39,6 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
           </div>
 
           <div className="flex items-center space-x-4">
-            <SettingsDialog locale={locale} theme={theme} />
-
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
@@ -49,44 +48,68 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
               </div>
             ) : user ? (
               <>
+                <Link href="/create-post">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <PenToolIcon className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('write')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </Link>
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm">
-                    <ChartBarIcon className="h-4 w-4 mr-2" />
-                    {t('dashboard')}
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <ChartBarIcon className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('dashboard')}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </Link>
 
                 {/* Admin-only links */}
                 {isAdmin && (
                   <>
                     <Link href="/tags">
-                      <Button variant="ghost" size="sm">
-                        <TagIcon className="h-4 w-4 mr-2" />
-                        {t('tags')}
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <TagIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('tags')}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </Link>
                     <Link href="/users">
-                      <Button variant="ghost" size="sm">
-                        <UsersIcon className="h-4 w-4 mr-2" />
-                        {t('users')}
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <UsersIcon className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{t('users')}</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </Link>
                   </>
                 )}
 
-                <Link href="/create-post">
-                  <Button variant="default" size="sm">
-                    <PenToolIcon className="h-4 w-4 mr-2" />
-                    {t('write')}
-                  </Button>
-                </Link>
+                <SettingsDialog locale={locale} theme={theme} />
+
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
                   <LogOutIcon className="h-4 w-4 mr-2" />
                   {t('logout')}
                 </Button>
-                <span className="text-sm text-muted-foreground">
-                  {user.username}
-                </span>
+                <span className="text-sm font-extrabold">{user.username}</span>
               </>
             ) : (
               <>
