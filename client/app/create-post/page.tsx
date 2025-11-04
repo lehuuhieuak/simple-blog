@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,8 +16,8 @@ import { Save, Eye, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { ITag } from '@/types/tag.type';
 
-export default function CreatePostPage() {
-  const { user, loading: authLoading } = useAuth();
+function CreatePostPageContent() {
+  const { user } = useAuth();
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('post.create');
@@ -32,11 +33,6 @@ export default function CreatePostPage() {
   const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
   const [error, setError] = useState('');
 
-  if (!authLoading && !user) {
-    router.push(`/${locale}/login`);
-    return null;
-  }
-
   const handleSubmit = async (published: boolean) => {
     if (!title.trim() || !content.trim()) {
       setError(t('titleRequired'));
@@ -46,12 +42,12 @@ export default function CreatePostPage() {
     setError('');
 
     try {
-      const tagIds = selectedTags.map(tag => tag.id);
+      const tagIds = selectedTags.map((tag) => tag.id);
       await createPostMutation.mutateAsync({
         title,
         content,
         published,
-        tag_ids: tagIds
+        tag_ids: tagIds,
       });
       router.push('./dashboard');
     } catch (error: any) {
@@ -60,28 +56,17 @@ export default function CreatePostPage() {
   };
 
   const addTag = (tag: ITag) => {
-    if (!selectedTags.find(t => t.id === tag.id)) {
+    if (!selectedTags.find((t) => t.id === tag.id)) {
       setSelectedTags([...selectedTags, tag]);
     }
   };
 
   const removeTag = (tagId: number) => {
-    setSelectedTags(selectedTags.filter(tag => tag.id !== tagId));
+    setSelectedTags(selectedTags.filter((tag) => tag.id !== tagId));
   };
 
   const availableTags = tagsData?.tags || [];
   const isSubmitting = createPostMutation.isPending;
-
-  if (authLoading || tagsLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-muted-foreground">{tCommon('loading')}</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="mx-auto">
@@ -129,7 +114,7 @@ export default function CreatePostPage() {
               )}
               <div className="flex flex-wrap gap-2">
                 {availableTags
-                  .filter(tag => !selectedTags.find(t => t.id === tag.id))
+                  .filter((tag) => !selectedTags.find((t) => t.id === tag.id))
                   .map((tag) => (
                     <Badge
                       key={tag.id}
@@ -144,7 +129,11 @@ export default function CreatePostPage() {
               </div>
               {availableTags.length === 0 && (
                 <p className="text-sm text-muted-foreground">
-                  {t('tagsUnavailable')} <a href="./tags" className="text-primary hover:underline">{t('tagsUnavailable')}</a> first.
+                  {t('tagsUnavailable')}{' '}
+                  <a href="./tags" className="text-primary hover:underline">
+                    {t('tagsUnavailable')}
+                  </a>{' '}
+                  first.
                 </p>
               )}
             </div>
@@ -186,5 +175,13 @@ export default function CreatePostPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function CreatePostPage() {
+  return (
+    <ProtectedRoute page="create-post">
+      <CreatePostPageContent />
+    </ProtectedRoute>
   );
 }

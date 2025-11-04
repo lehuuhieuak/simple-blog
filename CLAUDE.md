@@ -299,3 +299,98 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 - Run `npm install` after git pulls to sync dependencies
 - Use `npm run lint -- --fix` to auto-fix linting issues before committing
 - Clear Next.js cache with `rm -rf .next` if experiencing stale builds
+
+## Protected Pages Pattern (Authentication)
+
+### The Problem
+Before: Each protected page needed to manually check authentication and handle state updates during render:
+```tsx
+// ❌ BAD: Causes "Cannot update component during render" error
+if (!authLoading && !user) {
+  router.push('/login');  // State update during render!
+  return null;
+}
+```
+
+### The Solution: ProtectedRoute Wrapper
+
+Use the existing `ProtectedRoute` component to wrap your page content. It handles:
+- ✅ Loading state display while auth is being verified
+- ✅ Redirect logic in `useEffect` (safe, after render)
+- ✅ Permission checking before rendering
+
+**Pattern for Protected Pages:**
+
+```tsx
+'use client';
+
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+
+// Split your page into two components:
+// 1. Content component (has access to auth, no redirect logic)
+function MyPageContent() {
+  const { user } = useAuth();  // User is guaranteed to exist here
+  const router = useRouter();
+
+  // Your normal page logic here
+  return <div>Page content</div>;
+}
+
+// 2. Wrapper component (handles auth check)
+export default function MyPage() {
+  return (
+    <ProtectedRoute page="my-page">
+      <MyPageContent />
+    </ProtectedRoute>
+  );
+}
+```
+
+### Page Names (for ProtectedRoute)
+These must match the `PERMISSIONS` object in `lib/permissions.ts`:
+- **User Pages** (any authenticated user): `dashboard`, `create-post`, `edit-post`, `my-posts`
+- **Admin Pages**: `tags`, `users`, `analytics`
+
+### Real Example: CreatePostPage
+
+Before (manual auth check):
+```tsx
+export default function CreatePostPage() {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) { /* show loader */ }
+  if (!authLoading && !user) {
+    router.push('/login');  // ❌ Causes render error
+    return null;
+  }
+  // page content...
+}
+```
+
+After (using ProtectedRoute):
+```tsx
+function CreatePostPageContent() {
+  const { user } = useAuth();  // No loading checks needed
+  // page content...
+}
+
+export default function CreatePostPage() {
+  return (
+    <ProtectedRoute page="create-post">
+      <CreatePostPageContent />
+    </ProtectedRoute>
+  );
+}
+```
+
+### Key Benefits
+- **DRY**: No duplicate auth/loading logic across pages
+- **Safe**: Redirect happens in `useEffect`, not during render
+- **Consistent**: All protected pages follow the same pattern
+- **Flexible**: Can use `fallback` prop for custom error UI
+
+### How ProtectedRoute Works
+1. Shows loading spinner while `useAuth()` is checking auth
+2. Redirects unauthenticated users to `/login` in `useEffect` (safe)
+3. Checks permissions against `PERMISSIONS` config
+4. Renders children only after auth is verified and user has access
