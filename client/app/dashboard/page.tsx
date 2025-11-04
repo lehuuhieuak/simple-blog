@@ -46,7 +46,7 @@ function DashboardPageContent() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push(`/${locale}/login`);
+      router.push('/login');
       return;
     }
   }, [user, authLoading, router, locale]);
@@ -100,7 +100,7 @@ function DashboardPageContent() {
             {t('subtitle', { username: user.username })}
           </p>
         </div>
-        <Link href="./create-post">
+        <Link href="/create-post">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             {t('newPost')}
@@ -152,7 +152,7 @@ function DashboardPageContent() {
               <p className="text-muted-foreground mb-4">
                 {t('noPosts.subtitle')}
               </p>
-              <Link href="./create-post">
+              <Link href="/create-post">
                 <Button>
                   <PenTool className="h-4 w-4 mr-2" />
                   {t('noPosts.writeFirst')}
@@ -189,14 +189,14 @@ function DashboardPageContent() {
                     </div>
                     <div className="flex items-center space-x-2">
                       {post.published && (
-                        <Link href={`./posts/${post.slug}`}>
+                        <Link href={`/posts/${post.slug}`}>
                           <Button variant="outline" size="sm">
                             <Eye className="h-4 w-4 mr-2" />
                             {t('postActions.view')}
                           </Button>
                         </Link>
                       )}
-                      <Link href={`./edit-post/${post.slug}`}>
+                      <Link href={`/edit-post/${post.slug}`}>
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4 mr-2" />
                           {t('postActions.edit')}
