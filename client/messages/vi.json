@@ -77,17 +77,14 @@
     "hero": {
       "title": "Chào mừng đến với DevBlog",
       "subtitle": "Khám phá những câu chuyện, hiểu biết và kiến thức tuyệt vời từ các nhà phát triển trên khắp thế giới. Chia sẻ hành trình của riêng bạn và kết nối với cộng đồng.",
-      "startWriting": "Bắt đầu viết",
-      "signIn": "Đăng nhập"
+      "startWriting": "Bắt đầu viết"
     },
     "posts": {
       "title": "Bài viết mới nhất",
       "loading": "Đang tải bài viết...",
       "error": "Lỗi khi tải bài viết: {error}",
       "noPosts": {
-        "title": "Chưa có bài viết nào",
-        "subtitle": "Hãy là người đầu tiên chia sẻ kiến thức của bạn với cộng đồng!",
-        "createFirst": "Tạo bài viết đầu tiên của bạn"
+        "title": "Chưa có bài viết nào"
       },
       "pagination": {
         "page": "Trang {current} / {total}"
@@ -147,8 +144,8 @@
     },
     "card": {
       "readMore": "Đọc thêm",
-      "published":"Đã xuất bản",
-      "draft":"Bản nháp"
+      "published": "Đã xuất bản",
+      "draft": "Bản nháp"
     },
     "editor": {
       "preview": "Xem trước",

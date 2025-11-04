@@ -44,15 +44,10 @@ export default function Home() {
           {t('hero.subtitle')}
         </p>
         <div className="flex justify-center">
-          <Link href="./register">
+          <Link href="./create-post">
             <Button size="lg" className="mr-4">
               <PenTool className="h-5 w-5 mr-2" />
               {t('hero.startWriting')}
-            </Button>
-          </Link>
-          <Link href="./login">
-            <Button variant="outline" size="lg">
-              {t('hero.signIn')}
             </Button>
           </Link>
         </div>
@@ -68,12 +63,6 @@ export default function Home() {
             <h3 className="text-lg font-semibold mb-2">
               {t('posts.noPosts.title')}
             </h3>
-            <p className="text-muted-foreground mb-4">
-              {t('posts.noPosts.subtitle')}
-            </p>
-            <Link href="./register">
-              <Button>{t('posts.noPosts.createFirst')}</Button>
-            </Link>
           </div>
         ) : (
           <>

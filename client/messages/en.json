@@ -39,7 +39,7 @@
     "signup": "Sign Up",
     "profile": "Profile",
     "tags": "Tags",
-    "users": "Users" 
+    "users": "Users"
   },
   "auth": {
     "login": {
@@ -77,17 +77,14 @@
     "hero": {
       "title": "Welcome to DevBlog",
       "subtitle": "Discover amazing stories, insights, and knowledge from developers around the world. Share your own journey and connect with the community.",
-      "startWriting": "Start Writing",
-      "signIn": "Sign In"
+      "startWriting": "Start Writing"
     },
     "posts": {
       "title": "Latest Posts",
       "loading": "Loading posts...",
       "error": "Error loading posts: {error}",
       "noPosts": {
-        "title": "No posts yet",
-        "subtitle": "Be the first to share your knowledge with the community!",
-        "createFirst": "Create Your First Post"
+        "title": "No posts yet"
       },
       "pagination": {
         "page": "Page {current} of {total}"
@@ -242,13 +239,11 @@
       "deletingButton": "Deleting..."
     },
     "users": {
-      "loadingUsers": "Loading users...",
-      "errorLoading": "Error loading users: {error}",
       "loading": "Loading users...",
+      "errorLoading": "Error loading users: {error}",
       "title": "User Management",
       "createButton": "Create User",
       "createNewUser": "Create New User",
-      "createUser": "Create User",
       "creatingButton": "Creating...",
       "email": "Email",
       "username": "Username",
@@ -269,7 +264,6 @@
       "pageOf": "Page {current} of {total}",
       "editUser": "Edit User",
       "deleteUserConfirm": "Delete user {username}?",
-      "updating": "Updating...",
       "userUpdatedSuccess": "User updated successfully",
       "userDeletedSuccess": "User deleted successfully",
       "userCreatedSuccess": "User created successfully",
