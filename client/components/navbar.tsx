@@ -103,8 +103,6 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
                   </>
                 )}
 
-                <SettingsDialog locale={locale} theme={theme} />
-
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
                   <LogOutIcon className="h-4 w-4 mr-2" />
                   {t('logout')}
@@ -113,6 +111,7 @@ export function Navbar({ locale, theme }: { locale: string; theme: string }) {
               </>
             ) : (
               <>
+                <SettingsDialog locale={locale} theme={theme} />
                 <Link href="/login">
                   <Button variant="ghost" size="sm">
                     {t('login')}
