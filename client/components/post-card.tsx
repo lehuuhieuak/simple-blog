@@ -35,7 +35,6 @@ export function PostCard({ post }: PostCardProps) {
                 <Badge
                   variant="outline"
                   className="text-xs cursor-pointer hover:bg-gray-100 transition-colors"
-                  style={{ borderColor: tag.color, color: tag.color }}
                 >
                   {tag.name}
                 </Badge>

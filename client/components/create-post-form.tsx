@@ -6,7 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useCreatePost, useTags } from '@/hooks/useApi';
 import { X, Save, Eye } from 'lucide-react';
@@ -17,18 +23,19 @@ interface CreatePostFormProps {
 }
 
 export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
+  const router = useRouter();
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [published, setPublished] = useState(false);
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([]);
-  
-  const router = useRouter();
+
   const createPostMutation = useCreatePost();
   const { data: tagsData, isLoading: tagsLoading } = useTags(1, 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !content.trim()) {
       return;
     }
@@ -58,14 +65,15 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
   };
 
   const handleTagToggle = (tagId: number) => {
-    setSelectedTagIds(prev => 
-      prev.includes(tagId) 
-        ? prev.filter(id => id !== tagId)
-        : [...prev, tagId]
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId],
     );
   };
 
-  const selectedTags = tagsData?.tags?.filter(tag => selectedTagIds.includes(tag.id)) || [];
+  const selectedTags =
+    tagsData?.tags?.filter((tag) => selectedTagIds.includes(tag.id)) || [];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -120,9 +128,10 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
                 {tagsData?.tags?.map((tag) => (
                   <Badge
                     key={tag.id}
-                    variant={selectedTagIds.includes(tag.id) ? "default" : "outline"}
+                    variant={
+                      selectedTagIds.includes(tag.id) ? 'default' : 'outline'
+                    }
                     className="cursor-pointer hover:scale-105 transition-transform"
-                    style={selectedTagIds.includes(tag.id) ? { backgroundColor: tag.color } : { borderColor: tag.color }}
                     onClick={() => handleTagToggle(tag.id)}
                   >
                     {tag.name}
@@ -136,7 +145,6 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
                     {selectedTags.map((tag) => (
                       <Badge
                         key={tag.id}
-                        style={{ backgroundColor: tag.color }}
                         className="text-white"
                       >
                         {tag.name}
@@ -159,7 +167,10 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
         {/* Publish Status */}
         <div className="space-y-2">
           <Label htmlFor="published">Status</Label>
-          <Select value={published ? "published" : "draft"} onValueChange={(value) => setPublished(value === "published")}>
+          <Select
+            value={published ? 'published' : 'draft'}
+            onValueChange={(value) => setPublished(value === 'published')}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
@@ -174,7 +185,9 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
         <div className="flex justify-end gap-3">
           <Button
             type="submit"
-            disabled={createPostMutation.isPending || !title.trim() || !content.trim()}
+            disabled={
+              createPostMutation.isPending || !title.trim() || !content.trim()
+            }
             className="min-w-[120px]"
           >
             {createPostMutation.isPending ? (
@@ -184,7 +197,11 @@ export function CreatePostForm({ onSuccess, onCancel }: CreatePostFormProps) {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                {published ? <Eye className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                {published ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 {published ? 'Publish' : 'Save Draft'}
               </div>
             )}

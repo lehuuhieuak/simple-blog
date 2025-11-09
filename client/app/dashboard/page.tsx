@@ -25,7 +25,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import type { IPost } from '@/types/post.type';
+import type { IPost } from '@/types/post.typs';
 
 function DashboardPageContent() {
   const { user, loading: authLoading } = useAuth();
@@ -169,7 +169,7 @@ function DashboardPageContent() {
                     <div className="space-y-1">
                       <CardTitle className="">{post.title}</CardTitle>
                       <CardDescription className="line-clamp-2">
-                        {post.excerpt}
+                        {post.content ? post.content.substring(0, 100) : 'No content'}
                       </CardDescription>
                     </div>
                     <Badge variant={post.published ? 'default' : 'secondary'}>
@@ -181,7 +181,7 @@ function DashboardPageContent() {
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
                       {t('postMeta.created', { date: new Date(post.created_at).toLocaleDateString() })}
-                      {post.updated_at !== post.created_at && (
+                      {post.updated_at && post.updated_at !== post.created_at && (
                         <span className="ml-2">
                           • {t('postMeta.updated', { date: new Date(post.updated_at).toLocaleDateString() })}
                         </span>

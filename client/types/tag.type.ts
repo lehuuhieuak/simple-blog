@@ -3,19 +3,16 @@ export interface ITag {
   name: string;
   slug: string;
   description?: string;
-  color: string;
 }
 
 export interface ICreateTagRequest {
   name: string;
   description: string;
-  color: string;
 }
 
 export interface IUpdateTagRequest {
   name: string;
   description: string;
-  color: string;
 }
 
 export interface ITagsResponse {

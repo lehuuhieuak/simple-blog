@@ -1,43 +1,55 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { translateValidationError } from '@/lib/validation-errors';
+import { registerSchema, type RegisterInput } from '@/lib/validations';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { UserPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const { register } = useAuth();
-  const router = useRouter();
+  const { register: registerUser } = useAuth();
   const t = useTranslations('auth.register');
   const tCommon = useTranslations('common');
+  const tValidation = useTranslations('validation');
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onChange', // Enable real-time validation
+  });
 
-    const result = await register(email, username, password);
+  const onSubmit = async (data: RegisterInput) => {
+    const result = await registerUser(data.email, data.username, data.password);
 
     if (result.success) {
       router.push('./dashboard');
     } else {
-      setError(result.error || tCommon('error'));
+      setError('root', {
+        message: result.error || tCommon('error'),
+      });
     }
-
-    setLoading(false);
   };
+
+  const rootError = errors.root?.message;
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
@@ -47,62 +59,97 @@ export default function RegisterPage() {
             <UserPlus className="h-5 w-5" />
             {t('title')}
           </CardTitle>
-          <CardDescription>
-            {t('subtitle')}
-          </CardDescription>
+          <CardDescription>{t('subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {rootError && (
               <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                {error}
+                {rootError}
               </div>
             )}
-            
-            <div className="space-y-2">
+
+            <div className="grid gap-3">
               <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('emailPlaceholder')}
-                required
+                {...register('email')}
               />
+              {errors.email && (
+                <p className="text-xs text-red-600">
+                  {translateValidationError(errors.email.message, tValidation)}
+                </p>
+              )}
             </div>
-            
-            <div className="space-y-2">
+
+            <div className="grid gap-3">
               <Label htmlFor="username">{t('username')}</Label>
               <Input
                 id="username"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
                 placeholder={t('usernamePlaceholder')}
-                required
-                minLength={3}
-                maxLength={20}
+                {...register('username')}
               />
+              {errors.username && (
+                <p className="text-xs text-red-600">
+                  {translateValidationError(
+                    errors.username.message,
+                    tValidation,
+                  )}
+                </p>
+              )}
             </div>
-            
-            <div className="space-y-2">
+
+            <div className="grid gap-3">
               <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('passwordPlaceholder')}
-                required
-                minLength={6}
+                {...register('password')}
               />
+              {errors.password && (
+                <p className="text-xs text-red-600">
+                  {translateValidationError(
+                    errors.password.message,
+                    tValidation,
+                  )}
+                </p>
+              )}
             </div>
-            
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('registering') : t('registerButton')}
+
+            <div className="grid gap-3">
+              <Label htmlFor="passwordConfirm">{t('passwordConfirm')}</Label>
+              <Input
+                id="passwordConfirm"
+                type="password"
+                placeholder={t('passwordConfirmPlaceholder')}
+                {...register('passwordConfirm')}
+              />
+              {errors.passwordConfirm && (
+                <p className="text-xs text-red-600">
+                  {translateValidationError(
+                    errors.passwordConfirm.message,
+                    tValidation,
+                  )}
+                </p>
+              )}
+            </div>
+
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full border-2 border-transparent border-t-white animate-spin"></div>
+                  {t('registering')}
+                </span>
+              ) : (
+                t('registerButton')
+              )}
             </Button>
           </form>
-          
+
           <div className="mt-4 text-center text-sm">
             {t('hasAccount')}{' '}
             <Link href="/login" className="text-primary hover:underline">
