@@ -62,9 +62,11 @@
       "email": "Email",
       "username": "Tên người dùng",
       "password": "Mật khẩu",
+      "passwordConfirm": "Xác nhận mật khẩu",
       "emailPlaceholder": "Nhập email của bạn",
-      "usernamePlaceholder": "Chọn tên người dùng",
-      "passwordPlaceholder": "Tạo mật khẩu",
+      "usernamePlaceholder": "Nhập tên người dùng",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "passwordConfirmPlaceholder": "Xác nhận mật khẩu của bạn",
       "registerButton": "Tạo tài khoản",
       "registering": "Đang tạo tài khoản...",
       "hasAccount": "Đã có tài khoản?",
@@ -168,7 +170,10 @@
     "maxLength": "Phải ít hơn {max} ký tự",
     "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
     "usernameMin": "Tên người dùng phải có ít nhất 3 ký tự",
-    "usernameMax": "Tên người dùng phải ít hơn 20 ký tự"
+    "usernameMax": "Tên người dùng phải ít hơn 20 ký tự",
+    "passwordMismatch": "Mật khẩu không khớp",
+    "validating": "Đang xác thực...",
+    "validationError": "Lỗi xác thực"
   },
   "settings": {
     "title": "Cài đặt",
@@ -236,7 +241,10 @@
       "updateButton": "Cập nhật thẻ",
       "deleteTitle": "Xóa thẻ",
       "deleteConfirmation": "Bạn có chắc chắn muốn xóa thẻ này? Hành động này không thể hoàn tác.",
-      "deletingButton": "Đang xóa..."
+      "deletingButton": "Đang xóa...",
+      "tableHeaderId": "Id",
+      "tableHeaderName": "Tên",
+      "tableHeaderActions": "Hành động"
     },
     "users": {
       "loading": "Đang tải người dùng...",
@@ -268,7 +276,10 @@
       "userDeletedSuccess": "Xóa người dùng thành công",
       "userCreatedSuccess": "Tạo người dùng thành công",
       "updatingButton": "Đang cập nhật...",
-      "updateButton": "Cập nhật"
+      "updateButton": "Cập nhật",
+      "tableHeaderId": "Số thứ tự",
+      "tableHeaderCreated": "Ngày tạo",
+      "tableHeaderActions": "Hành động"
     }
   },
   "postDetail": {
