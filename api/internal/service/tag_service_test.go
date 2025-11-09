@@ -125,9 +125,7 @@ func TestTagService_CreateTag(t *testing.T) {
 		{
 			name: "successful tag creation",
 			request: &dto.TagRequest{
-				Name:        "Technology",
-				Description: "Posts about technology",
-				Color:       "#FF5733",
+				Name: "Technology",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.existsByNameFunc = func(name string) (bool, error) {
@@ -139,9 +137,7 @@ func TestTagService_CreateTag(t *testing.T) {
 		{
 			name: "tag already exists",
 			request: &dto.TagRequest{
-				Name:        "Existing Tag",
-				Description: "This tag already exists",
-				Color:       "#FF5733",
+				Name: "Existing Tag",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.existsByNameFunc = func(name string) (bool, error) {
@@ -153,9 +149,7 @@ func TestTagService_CreateTag(t *testing.T) {
 		{
 			name: "repository error on exists check",
 			request: &dto.TagRequest{
-				Name:        "Technology",
-				Description: "Posts about technology",
-				Color:       "#FF5733",
+				Name: "Technology",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.existsByNameFunc = func(name string) (bool, error) {
@@ -167,9 +161,7 @@ func TestTagService_CreateTag(t *testing.T) {
 		{
 			name: "repository error on create",
 			request: &dto.TagRequest{
-				Name:        "Technology",
-				Description: "Posts about technology",
-				Color:       "#FF5733",
+				Name: "Technology",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.existsByNameFunc = func(name string) (bool, error) {
@@ -221,14 +213,6 @@ func TestTagService_CreateTag(t *testing.T) {
 
 			if result.Name != tt.request.Name {
 				t.Errorf("expected name %s, got %s", tt.request.Name, result.Name)
-			}
-
-			if result.Description != tt.request.Description {
-				t.Errorf("expected description %s, got %s", tt.request.Description, result.Description)
-			}
-
-			if result.Color != tt.request.Color {
-				t.Errorf("expected color %s, got %s", tt.request.Color, result.Color)
 			}
 
 			if result.Slug == "" {
@@ -358,11 +342,9 @@ func TestTagService_GetTags(t *testing.T) {
 
 func TestTagService_UpdateTag(t *testing.T) {
 	existingTag := &domain.Tag{
-		ID:          1,
-		Name:        "Original Name",
-		Slug:        "original-name",
-		Description: "Original description",
-		Color:       "#FF5733",
+		ID:   1,
+		Name: "Original Name",
+		Slug: "original-name",
 	}
 
 	tests := []struct {
@@ -377,9 +359,7 @@ func TestTagService_UpdateTag(t *testing.T) {
 			name:  "successful update",
 			tagID: 1,
 			request: &dto.TagRequest{
-				Name:        "Updated Name",
-				Description: "Updated description",
-				Color:       "#00FF00",
+				Name: "Updated Name",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.getByIDFunc = func(id int) (*domain.Tag, error) {
@@ -398,9 +378,7 @@ func TestTagService_UpdateTag(t *testing.T) {
 			name:  "tag not found",
 			tagID: 999,
 			request: &dto.TagRequest{
-				Name:        "Updated Name",
-				Description: "Updated description",
-				Color:       "#00FF00",
+				Name: "Updated Name",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.getByIDFunc = func(id int) (*domain.Tag, error) {
@@ -413,9 +391,7 @@ func TestTagService_UpdateTag(t *testing.T) {
 			name:  "name already exists",
 			tagID: 1,
 			request: &dto.TagRequest{
-				Name:        "Existing Name",
-				Description: "Updated description",
-				Color:       "#00FF00",
+				Name: "Existing Name",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.getByIDFunc = func(id int) (*domain.Tag, error) {
@@ -434,9 +410,7 @@ func TestTagService_UpdateTag(t *testing.T) {
 			name:  "same name update (should succeed)",
 			tagID: 1,
 			request: &dto.TagRequest{
-				Name:        "Original Name",
-				Description: "Updated description",
-				Color:       "#00FF00",
+				Name: "Original Name",
 			},
 			mockSetup: func(repo *MockTagRepositoryForTagService) {
 				repo.getByIDFunc = func(id int) (*domain.Tag, error) {
@@ -487,13 +461,6 @@ func TestTagService_UpdateTag(t *testing.T) {
 				t.Errorf("expected name %s, got %s", tt.request.Name, result.Name)
 			}
 
-			if result.Description != tt.request.Description {
-				t.Errorf("expected description %s, got %s", tt.request.Description, result.Description)
-			}
-
-			if result.Color != tt.request.Color {
-				t.Errorf("expected color %s, got %s", tt.request.Color, result.Color)
-			}
 		})
 	}
 }

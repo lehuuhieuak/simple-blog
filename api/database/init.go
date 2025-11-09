@@ -45,8 +45,6 @@ func InitializeDatabase() error {
 			id SERIAL PRIMARY KEY,
 			name VARCHAR(255) NOT NULL,
 			slug VARCHAR(255) UNIQUE NOT NULL,
-			description VARCHAR(255) NOT NULL,
-			color VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)

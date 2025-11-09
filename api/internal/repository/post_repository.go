@@ -74,7 +74,7 @@ func (r *postRepository) GetByID(id int) (*domain.Post, error) {
 	post := &domain.Post{}
 	query := `SELECT p.id, p.title, p.slug, p.content, p.author_id, p.published, 
 			         p.created_at, p.updated_at, u.username, u.email
-			  FROM posts p []
+			  FROM posts p
 			  JOIN users u ON p.author_id = u.id 
 			  WHERE p.id = $1`
 	err := r.db.QueryRow(query, id).
@@ -300,9 +300,9 @@ func (r *postRepository) RemoveTags(postID int) error {
 
 // getPostTags retrieves tags for a specific post
 func (r *postRepository) getPostTags(postID int) ([]domain.Tag, error) {
-	query := `SELECT t.id, t.name, t.slug, t.description, t.color, t.created_at, t.updated_at
-			  FROM tags t 
-			  JOIN post_tags pt ON t.id = pt.tag_id 
+	query := `SELECT t.id, t.name, t.slug, t.created_at, t.updated_at
+			  FROM tags t
+			  JOIN post_tags pt ON t.id = pt.tag_id
 			  WHERE pt.post_id = $1`
 
 	rows, err := r.db.Query(query, postID)
@@ -314,8 +314,8 @@ func (r *postRepository) getPostTags(postID int) ([]domain.Tag, error) {
 	var tags []domain.Tag
 	for rows.Next() {
 		var tag domain.Tag
-		err := rows.Scan(&tag.ID, &tag.Name, &tag.Slug, &tag.Description,
-			&tag.Color, &tag.CreatedAt, &tag.UpdatedAt)
+		err := rows.Scan(&tag.ID, &tag.Name, &tag.Slug,
+			&tag.CreatedAt, &tag.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

@@ -10,7 +10,5 @@ type PostRequest struct {
 
 // TagRequest represents the tag request DTO
 type TagRequest struct {
-	Name        string `json:"name" binding:"required,max=50" example:"Technology"`
-	Description string `json:"description" binding:"max=255" example:"Posts about technology"`
-	Color       string `json:"color" binding:"required,len=7" example:"#FF5733"` // hex color like #FF5733
+	Name string `json:"name" binding:"required,max=50" example:"Technology"`
 }

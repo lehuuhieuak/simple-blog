@@ -1,12 +1,12 @@
 package service
 
 import (
-	"errors"
-	"math"
 	"blog-api/internal/domain"
 	"blog-api/internal/dto"
 	"blog-api/internal/repository"
 	"blog-api/utils"
+	"errors"
+	"math"
 )
 
 // TagService defines the interface for tag operations
@@ -43,10 +43,8 @@ func (s *tagService) CreateTag(req *dto.TagRequest) (*domain.Tag, error) {
 	slug := utils.GenerateSlug(req.Name)
 
 	tag := &domain.Tag{
-		Name:        req.Name,
-		Slug:        slug,
-		Description: req.Description,
-		Color:       req.Color,
+		Name: req.Name,
+		Slug: slug,
 	}
 
 	return s.tagRepo.Create(tag)
@@ -107,8 +105,6 @@ func (s *tagService) UpdateTag(id int, req *dto.TagRequest) (*domain.Tag, error)
 	// Update tag
 	existingTag.Name = req.Name
 	existingTag.Slug = newSlug
-	existingTag.Description = req.Description
-	existingTag.Color = req.Color
 
 	return s.tagRepo.Update(existingTag)
 }

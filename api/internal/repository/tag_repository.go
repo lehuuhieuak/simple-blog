@@ -27,10 +27,10 @@ func NewTagRepository(db *sql.DB) TagRepository {
 
 // Create creates a new tag
 func (r *tagRepository) Create(tag *domain.Tag) (*domain.Tag, error) {
-	query := `INSERT INTO tags (name, slug, description, color) 
-			  VALUES ($1, $2, $3, $4) 
+	query := `INSERT INTO tags (name, slug)
+			  VALUES ($1, $2)
 			  RETURNING id, created_at, updated_at`
-	err := r.db.QueryRow(query, tag.Name, tag.Slug, tag.Description, tag.Color).
+	err := r.db.QueryRow(query, tag.Name, tag.Slug).
 		Scan(&tag.ID, &tag.CreatedAt, &tag.UpdatedAt)
 	if err != nil {
 		return nil, err
@@ -41,10 +41,10 @@ func (r *tagRepository) Create(tag *domain.Tag) (*domain.Tag, error) {
 // GetByID retrieves a tag by ID
 func (r *tagRepository) GetByID(id int) (*domain.Tag, error) {
 	tag := &domain.Tag{}
-	query := `SELECT id, name, slug, description, color, created_at, updated_at 
+	query := `SELECT id, name, slug, created_at, updated_at
 			  FROM tags WHERE id = $1`
 	err := r.db.QueryRow(query, id).
-		Scan(&tag.ID, &tag.Name, &tag.Slug, &tag.Description, &tag.Color, 
+		Scan(&tag.ID, &tag.Name, &tag.Slug,
 			 &tag.CreatedAt, &tag.UpdatedAt)
 	if err != nil {
 		return nil, err
@@ -55,10 +55,10 @@ func (r *tagRepository) GetByID(id int) (*domain.Tag, error) {
 // GetBySlug retrieves a tag by slug
 func (r *tagRepository) GetBySlug(slug string) (*domain.Tag, error) {
 	tag := &domain.Tag{}
-	query := `SELECT id, name, slug, description, color, created_at, updated_at 
+	query := `SELECT id, name, slug, created_at, updated_at
 			  FROM tags WHERE slug = $1`
 	err := r.db.QueryRow(query, slug).
-		Scan(&tag.ID, &tag.Name, &tag.Slug, &tag.Description, &tag.Color, 
+		Scan(&tag.ID, &tag.Name, &tag.Slug,
 			 &tag.CreatedAt, &tag.UpdatedAt)
 	if err != nil {
 		return nil, err
@@ -68,9 +68,9 @@ func (r *tagRepository) GetBySlug(slug string) (*domain.Tag, error) {
 
 // Update updates a tag
 func (r *tagRepository) Update(tag *domain.Tag) (*domain.Tag, error) {
-	query := `UPDATE tags SET name = $1, slug = $2, description = $3, color = $4, updated_at = NOW() 
-			  WHERE id = $5 RETURNING updated_at`
-	err := r.db.QueryRow(query, tag.Name, tag.Slug, tag.Description, tag.Color, tag.ID).
+	query := `UPDATE tags SET name = $1, slug = $2, updated_at = NOW()
+			  WHERE id = $3 RETURNING updated_at`
+	err := r.db.QueryRow(query, tag.Name, tag.Slug, tag.ID).
 		Scan(&tag.UpdatedAt)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (r *tagRepository) Delete(id int) error {
 // GetAll retrieves all tags with pagination
 func (r *tagRepository) GetAll(page, limit int) ([]domain.Tag, int, error) {
 	offset := (page - 1) * limit
-	
+
 	// Get total count
 	var total int
 	countQuery := `SELECT COUNT(*) FROM tags`
@@ -96,30 +96,30 @@ func (r *tagRepository) GetAll(page, limit int) ([]domain.Tag, int, error) {
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	// Get tags
-	query := `SELECT id, name, slug, description, color, created_at, updated_at 
-			  FROM tags 
-			  ORDER BY name ASC 
+	query := `SELECT id, name, slug, created_at, updated_at
+			  FROM tags
+			  ORDER BY name ASC
 			  LIMIT $1 OFFSET $2`
-	
+
 	rows, err := r.db.Query(query, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
 	defer rows.Close()
-	
+
 	var tags []domain.Tag
 	for rows.Next() {
 		var tag domain.Tag
-		err := rows.Scan(&tag.ID, &tag.Name, &tag.Slug, &tag.Description, 
-						&tag.Color, &tag.CreatedAt, &tag.UpdatedAt)
+		err := rows.Scan(&tag.ID, &tag.Name, &tag.Slug,
+						&tag.CreatedAt, &tag.UpdatedAt)
 		if err != nil {
 			return nil, 0, err
 		}
 		tags = append(tags, tag)
 	}
-	
+
 	return tags, total, nil
 }
 
