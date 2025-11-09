@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { apiClient, ApiError } from '@/lib/api';
+import { apiClient } from '@/lib/api';
 import { authQueryKeys } from '@/hooks/api/auth';
 import { handleApiError, isAuthError } from '@/lib/api-error-handler';
 

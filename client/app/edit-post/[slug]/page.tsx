@@ -14,7 +14,6 @@ export default function EditPostPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const t = useTranslations('pages.editPost');
-  const tCommon = useTranslations('common');
 
   const { data: post, isLoading, error } = usePost(slug);
 

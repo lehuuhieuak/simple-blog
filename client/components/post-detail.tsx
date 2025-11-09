@@ -5,7 +5,7 @@ import { TableOfContents } from '@/components/table-of-contents';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { usePost } from '@/hooks/useApi';
-import { ArrowLeft, Calendar, Clock, Eye, User } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User } from 'lucide-react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import { useTranslations } from 'next-intl';
@@ -123,10 +123,9 @@ export function PostDetail({ slug }: PostDetailProps) {
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
                   <Link key={tag.id} href={`/tags/${tag.slug}`}>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className="hover:bg-primary hover:text-primary-foreground transition-colors"
-                      style={{ borderColor: tag.color }}
                     >
                       {tag.name}
                     </Badge>
@@ -142,10 +141,10 @@ export function PostDetail({ slug }: PostDetailProps) {
               <div className="prose prose-gray dark:prose-invert max-w-none">
                 <ReactMarkdown
                   components={{
-                    code: ({ node, inline, className, children, ...props }) => {
+                    code: ({ inline, className, children, ...props }) => {
                       const match = /language-(\w+)/.exec(className || '');
                       const language = match ? match[1] : '';
-                      
+
                       if (!inline && language) {
                         return (
                           <CodeBlock language={language}>
@@ -153,7 +152,7 @@ export function PostDetail({ slug }: PostDetailProps) {
                           </CodeBlock>
                         );
                       }
-                      
+
                       return (
                         <code className={className} {...props}>
                           {children}

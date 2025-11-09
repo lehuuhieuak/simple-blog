@@ -7,9 +7,6 @@ import {
   $createTextNode,
   EditorState,
   FORMAT_TEXT_COMMAND,
-  FORMAT_ELEMENT_COMMAND,
-  INDENT_CONTENT_COMMAND,
-  OUTDENT_CONTENT_COMMAND,
 } from 'lexical';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -139,9 +136,9 @@ type ViewMode = 'edit' | 'preview' | 'split';
 // Toolbar Component
 function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
+  const [isBold] = useState(false);
+  const [isItalic] = useState(false);
+  const [isUnderline] = useState(false);
 
   const formatBold = () => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
@@ -285,7 +282,7 @@ function convertToMarkdown(editorState: EditorState): string {
   editorState.read(() => {
     try {
       markdown = $convertToMarkdownString(TRANSFORMERS);
-    } catch (error) {
+    } catch {
       // Fallback to plain text if conversion fails
       const root = $getRoot();
       markdown = root.getTextContent();

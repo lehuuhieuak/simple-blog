@@ -10,7 +10,6 @@ import {
   getVisiblePages,
   isAdmin,
   isAuthenticated,
-  type IUser,
 } from '@/lib/permissions';
 
 /**

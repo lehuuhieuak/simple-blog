@@ -1,10 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { ScrollArea } from './ui/scroll-area';
-import { Button } from './ui/button';
 
 interface Heading {
   level: number;
