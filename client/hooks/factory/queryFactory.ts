@@ -43,7 +43,7 @@ export function createDetailQuery<TData>(
  * Factory function to create filtered/searched query hooks
  * Useful for queries with multiple dynamic parameters
  */
-export function createFilteredQuery<TData, TParams extends Record<string, any>>(
+export function createFilteredQuery<TData, TParams extends Record<string, unknown>>(
   queryKeyBuilder: (params: TParams) => readonly unknown[],
   queryFn: (params: TParams) => Promise<TData>,
   defaultOptions?: Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn'>

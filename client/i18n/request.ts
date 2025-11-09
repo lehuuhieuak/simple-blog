@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import { getRequestConfig } from 'next-intl/server';
 import { locales, defaultLocale } from '../lib/config';
 import { cookies } from 'next/headers';
@@ -12,7 +11,7 @@ export default getRequestConfig(async () => {
 
   // Ensure we always return a valid locale
   const validLocale =
-    locale && locales.includes(locale as any) ? locale : defaultLocale;
+    locale && locales.includes(locale) ? locale : defaultLocale;
 
   if (locale !== validLocale) {
     console.log('Invalid locale:', locale, 'using default:', validLocale);
