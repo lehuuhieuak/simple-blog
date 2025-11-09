@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"net/http"
+	"blog-api/internal/domain"
 	"blog-api/internal/dto"
 	"blog-api/internal/service"
-	"blog-api/internal/domain"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -98,5 +98,11 @@ func (h *AuthHandler) GetMe(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, userResponse)
+	response, err := h.authService.GetUserByID(userResponse.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Invalid user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }

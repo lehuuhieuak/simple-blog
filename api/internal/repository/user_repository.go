@@ -56,9 +56,9 @@ func (r *userRepository) GetByEmail(email string) (*domain.User, error) {
 // GetByID retrieves a user by ID
 func (r *userRepository) GetByID(id int) (*domain.User, error) {
 	user := &domain.User{}
-	query := `SELECT id, email, username, password, created_at, updated_at FROM users WHERE id = $1`
+	query := `SELECT id, email, username, password, is_admin, created_at, updated_at FROM users WHERE id = $1`
 	err := r.db.QueryRow(query, id).
-		Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+		Scan(&user.ID, &user.Email, &user.Username, &user.Password, &user.IsAdmin, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
