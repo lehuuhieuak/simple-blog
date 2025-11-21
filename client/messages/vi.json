@@ -125,7 +125,7 @@
       "titleLabel": "Tiêu đề",
       "titlePlaceholder": "Nhập tiêu đề bài viết của bạn...",
       "contentLabel": "Nội dung (Markdown)",
-      "contentPlaceholder": "Viết nội dung bài viết của bạn bằng Markdown...",
+      "contentPlaceholder": "Viết nội dung bài viết của bạn...",
       "saveAsDraft": "Lưu làm bản nháp",
       "publish": "Xuất bản",
       "titleRequired": "Tiêu đề và nội dung là bắt buộc",

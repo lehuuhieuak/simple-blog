@@ -64,7 +64,8 @@ function CreatePostPageContent() {
         });
         router.push('./dashboard');
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : tCommon('error');
+        const errorMessage =
+          error instanceof Error ? error.message : tCommon('error');
         setError('root', {
           message: errorMessage,
         });
@@ -90,7 +91,8 @@ function CreatePostPageContent() {
         });
         router.push('./dashboard');
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : tCommon('error');
+        const errorMessage =
+          error instanceof Error ? error.message : tCommon('error');
         setError('root', {
           message: errorMessage,
         });
@@ -126,12 +128,12 @@ function CreatePostPageContent() {
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="grid w-full max-w-full items-center gap-3">
             <Label htmlFor="title">{tCommon('title')}</Label>
             <Input
               id="title"
               placeholder={t('titlePlaceholder')}
-              className="text-lg"
+              // className="text-lg"
               {...register('title')}
             />
             {errors.title && (
@@ -141,7 +143,7 @@ function CreatePostPageContent() {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="grid gap-3">
             <Label>{tCommon('tags')}</Label>
             <div className="space-y-3">
               {selectedTags.length > 0 && (
@@ -174,7 +176,7 @@ function CreatePostPageContent() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="grid gap-3">
             <Label>{tCommon('content')}</Label>
             <LexicalEditor
               value={content}
@@ -205,11 +207,11 @@ function CreatePostPageContent() {
                 onClick={handleSaveAsDraft}
                 disabled={isSubmitting}
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save />
                 {t('saveAsDraft')}
               </Button>
               <Button onClick={handlePublish} disabled={isSubmitting}>
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye />
                 {tCommon('publish')}
               </Button>
             </div>

@@ -18,7 +18,11 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
-import { $convertToMarkdownString, $convertFromMarkdownString, TRANSFORMERS } from '@lexical/markdown';
+import {
+  $convertToMarkdownString,
+  $convertFromMarkdownString,
+  TRANSFORMERS,
+} from '@lexical/markdown';
 import {
   HeadingNode,
   QuoteNode,
@@ -303,7 +307,7 @@ function InitializeMarkdownPlugin({ markdown }: { markdown: string }) {
           // Clear the editor first
           const root = $getRoot();
           root.clear();
-          
+
           // Convert markdown to Lexical nodes
           $convertFromMarkdownString(markdown, TRANSFORMERS);
           setIsInitialized(true);
@@ -357,35 +361,31 @@ export function LexicalEditor({
   }, [value]);
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Content (Rich Text)</label>
+    <div className="grid gap-3">
+      <div className="flex justify-end">
         <div className="flex items-center space-x-2">
           <Button
             type="button"
             variant={viewMode === 'edit' ? 'default' : 'outline'}
-            size="sm"
             onClick={() => setViewMode('edit')}
           >
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit />
             Edit
           </Button>
           <Button
             type="button"
             variant={viewMode === 'split' ? 'default' : 'outline'}
-            size="sm"
             onClick={() => setViewMode('split')}
           >
-            <SplitSquareHorizontal className="h-4 w-4 mr-2" />
+            <SplitSquareHorizontal />
             Split
           </Button>
           <Button
             type="button"
             variant={viewMode === 'preview' ? 'default' : 'outline'}
-            size="sm"
             onClick={() => setViewMode('preview')}
           >
-            <Eye className="h-4 w-4 mr-2" />
+            <Eye />
             Preview
           </Button>
         </div>
