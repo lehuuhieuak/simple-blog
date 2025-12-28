@@ -44,7 +44,9 @@ export default function EditPostPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <p className="text-red-600">{t('errorLoading', { error: error.message })}</p>
+          <p className="text-red-600">
+            {t('errorLoading', { error: error.message })}
+          </p>
         </div>
       </div>
     );
@@ -60,9 +62,5 @@ export default function EditPostPage() {
     );
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <EditPostForm post={post} />
-    </div>
-  );
+  return <EditPostForm post={post} />;
 }

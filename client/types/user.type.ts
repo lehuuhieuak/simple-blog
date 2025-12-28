@@ -2,7 +2,8 @@ export interface IUser {
   id: number;
   email: string;
   username: string;
-  created_at: string;
+  is_admin?: boolean;
+  created_at?: string;
   updated_at?: string;
 }
 

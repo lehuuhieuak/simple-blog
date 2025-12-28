@@ -311,13 +311,16 @@
       "error": "Lỗi: {error}"
     },
     "editPostForm": {
+      "title": "Chỉnh sửa bài viết",
       "titleLabel": "Tiêu đề",
       "titlePlaceholder": "Nhập tiêu đề bài viết của bạn...",
       "tagsLabel": "Thẻ",
-      "tagsUnavailable": "Không có thẻ nào. Vui lòng tạo thẻ trước.",
+      "tagsUnavailable": "Không có thẻ nào.",
+      "createTagsLink": "Tạo một số thẻ",
       "loadingTags": "Đang tải thẻ...",
       "contentLabel": "Nội dung",
       "contentPlaceholder": "Viết nội dung bài viết của bạn...",
+      "contentRequired": "Nội dung là bắt buộc",
       "statusLabel": "Trạng thái",
       "published": "Đã xuất bản",
       "draft": "Bản nháp",

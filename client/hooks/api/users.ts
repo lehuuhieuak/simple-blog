@@ -27,12 +27,12 @@ export const usersQueryKeys = {
  * Factory-generated filtered query hook supporting search and email filter
  */
 export function useUsers(page = 1, limit = 10, search = '', email = '') {
-  const params: IGetUsersParams = { page, limit, search, email };
+  const params = { page, limit, search, email };
 
   return createFilteredQuery(
-    (params: IGetUsersParams) => usersQueryKeys.list(params),
-    (params: IGetUsersParams) => apiClient.users.getAllUsers(params)
-  )(params);
+    (p) => usersQueryKeys.list(p as unknown as IGetUsersParams),
+    (p) => apiClient.users.getAllUsers(p as unknown as IGetUsersParams)
+  )(params as unknown as Record<string, unknown>);
 }
 
 /**

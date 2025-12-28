@@ -10,7 +10,8 @@
       "Bash(cat:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nfeat: redesign tags management page with table layout and minimal styling\n\n- Convert from card-based grid layout to clean table format\n- Improve visual hierarchy with consistent spacing and borders\n- Remove unnecessary decorative styling (gradients, shadows)\n- Use shadcn/ui components for consistent look and feel\n- Add i18n support for table headers (English/Vietnamese)\n- Implement pagination and search with improved UX\n- Create, read, update, delete operations on tags\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

@@ -11,7 +11,7 @@ export interface IUser {
   id: number;
   email: string;
   username: string;
-  is_admin: boolean;
+  is_admin?: boolean;
 }
 
 /**
@@ -55,7 +55,7 @@ export const PERMISSIONS = {
  */
 export function canAccessPage(user: IUser | null, page: string): boolean {
   // Public pages accessible to everyone
-  if (PERMISSIONS.PUBLIC.includes(page)) {
+  if ((PERMISSIONS.PUBLIC as readonly string[]).includes(page)) {
     return true;
   }
 
@@ -65,12 +65,12 @@ export function canAccessPage(user: IUser | null, page: string): boolean {
   }
 
   // Authenticated users can access user pages
-  if (PERMISSIONS.USER.includes(page)) {
+  if ((PERMISSIONS.USER as readonly string[]).includes(page)) {
     return true;
   }
 
   // Only admins can access admin pages
-  if (PERMISSIONS.ADMIN.includes(page)) {
+  if ((PERMISSIONS.ADMIN as readonly string[]).includes(page)) {
     return isAdmin(user);
   }
 
@@ -113,13 +113,13 @@ export function canManageUsers(user: IUser | null): boolean {
  * Get pages that should be visible in navigation based on user role
  */
 export function getVisiblePages(user: IUser | null): string[] {
-  const pages = [...PERMISSIONS.PUBLIC];
+  const pages: string[] = [...PERMISSIONS.PUBLIC];
 
   if (user) {
-    pages.push(...PERMISSIONS.USER);
+    pages.push(...(PERMISSIONS.USER as readonly string[]));
 
     if (isAdmin(user)) {
-      pages.push(...PERMISSIONS.ADMIN);
+      pages.push(...(PERMISSIONS.ADMIN as readonly string[]));
     }
   }
 

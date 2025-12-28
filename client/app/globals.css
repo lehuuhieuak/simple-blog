@@ -1,6 +1,8 @@
+@import '../styles/_variables.scss';
+@import '../styles/_keyframe-animations.scss';
+
 @import 'tw-animate-css';
 @import 'tailwindcss';
-@import '../styles/lexical.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,7 +15,7 @@
   }
 }
 
-.prose {
+/* .prose {
   @apply text-foreground max-w-none;
 }
 
@@ -74,7 +76,7 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
-}
+} */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -190,4 +192,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* ol, ul, menu {
+    list-style: inherit;
+  } */
 }

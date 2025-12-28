@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { canAccessPage, getUnauthorizedRedirect } from '@/lib/permissions';
+import { canAccessPage, getUnauthorizedRedirect, type IUser } from '@/lib/permissions';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -32,9 +32,9 @@ export function ProtectedRoute({
     if (loading) return;
 
     // Check if user can access this page
-    if (!canAccessPage(user, page)) {
+    if (!canAccessPage(user as IUser | null, page)) {
       // Redirect to appropriate location
-      const redirectPath = getUnauthorizedRedirect(user);
+      const redirectPath = getUnauthorizedRedirect(user as IUser | null);
       router.push(redirectPath);
     }
   }, [user, loading, page, router]);
@@ -49,7 +49,7 @@ export function ProtectedRoute({
   }
 
   // Check permission again before rendering
-  if (!canAccessPage(user, page)) {
+  if (!canAccessPage(user as IUser | null, page)) {
     return fallback || null;
   }
 

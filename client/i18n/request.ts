@@ -11,7 +11,9 @@ export default getRequestConfig(async () => {
 
   // Ensure we always return a valid locale
   const validLocale =
-    locale && locales.includes(locale) ? locale : defaultLocale;
+    locale && locales.includes(locale as typeof locales[number])
+      ? (locale as typeof locales[number])
+      : defaultLocale;
 
   if (locale !== validLocale) {
     console.log('Invalid locale:', locale, 'using default:', validLocale);

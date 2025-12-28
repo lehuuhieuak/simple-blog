@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api';
-import type { CreatePostRequest, UpdatePostRequest } from '@/lib/api';
+import type { ICreatePostRequest, IUpdatePostRequest } from '@/types/post.typs';
 import {
   createPaginationQuery,
   createDetailQuery,
@@ -74,7 +74,7 @@ export function usePostsByTagWithSlug(tagSlug: string, page = 1, limit = 10) {
  * Invalidates posts list and user's posts on success
  */
 export const useCreatePost = createCreateMutation(
-  (data: CreatePostRequest) => apiClient.posts.createPost(data),
+  (data: ICreatePostRequest) => apiClient.posts.createPost(data),
   {
     invalidateKeys: [
       postsQueryKeys.lists(),
@@ -89,7 +89,7 @@ export const useCreatePost = createCreateMutation(
  * Accepts { slug, data } object
  */
 export const useUpdatePost = createUpdateMutation(
-  ({ slug, data }: { slug: string; data: UpdatePostRequest }) =>
+  ({ slug, data }: { slug: string; data: IUpdatePostRequest }) =>
     apiClient.posts.updatePost(slug, data),
   {
     invalidateKeys: [

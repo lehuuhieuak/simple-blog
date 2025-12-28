@@ -311,13 +311,16 @@
       "error": "Error: {error}"
     },
     "editPostForm": {
+      "title": "Edit Post",
       "titleLabel": "Title",
       "titlePlaceholder": "Enter your post title...",
       "tagsLabel": "Tags",
-      "tagsUnavailable": "No tags available. Create some tags first.",
+      "tagsUnavailable": "No tags available.",
+      "createTagsLink": "Create some tags",
       "loadingTags": "Loading tags...",
       "contentLabel": "Content",
       "contentPlaceholder": "Write your post content...",
+      "contentRequired": "Content is required",
       "statusLabel": "Status",
       "published": "Published",
       "draft": "Draft",

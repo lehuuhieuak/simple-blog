@@ -7,8 +7,7 @@ import axios, {
 } from 'axios';
 import { toast } from 'sonner';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 // Custom error class for API errors
 export class ApiError extends Error {
@@ -86,9 +85,9 @@ export class BaseApiClient {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('auth-token');
             // Only redirect if not already on login page
-            if (!window.location.pathname.includes('/login')) {
-              window.location.href = '/login';
-            }
+            // if (!window.location.pathname.includes('/login')) {
+            //   window.location.href = '/login';
+            // }
           }
           break;
         case 403:

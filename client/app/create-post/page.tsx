@@ -1,6 +1,6 @@
 'use client';
 
-import { LexicalEditor } from '@/components/lexical-editor';
+// import { LexicalEditor } from '@/components/lexical-editor';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -178,13 +178,13 @@ function CreatePostPageContent() {
 
           <div className="grid gap-3">
             <Label>{tCommon('content')}</Label>
-            <LexicalEditor
+            {/* <LexicalEditor
               value={content}
               onChange={(newContent) => {
                 setValue('content', newContent, { shouldValidate: true });
               }}
               placeholder={t('contentPlaceholder')}
-            />
+            /> */}
             {errors.content && (
               <p className="text-xs text-red-600">
                 {translateValidationError(errors.content.message, tValidation)}

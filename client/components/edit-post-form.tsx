@@ -1,6 +1,5 @@
 'use client';
 
-import { LexicalEditor } from '@/components/lexical-editor';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,33 +10,28 @@ import { useTags } from '@/hooks/api/tags';
 import { translateValidationError } from '@/lib/validation-errors';
 import { postSchema } from '@/lib/validations';
 import { IPost } from '@/types/post.typs';
+import { ITag } from '@/types/tag.type';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Eye, Save, X } from 'lucide-react';
+import { Eye, Save, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import type { FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { SimpleEditor } from './tiptap-templates/simple/simple-editor';
 
 interface EditPostFormProps {
   post: IPost;
 }
 
-interface Tag {
-  id: number;
-  name: string;
-  slug: string;
-  description: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export function EditPostForm({ post }: EditPostFormProps) {
   const router = useRouter();
 
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<ITag[]>([]);
+  const t = useTranslations('forms.editPostForm');
   const tValidation = useTranslations('validation');
+  const tPages = useTranslations('pages.editPost');
 
   const updatePostMutation = useUpdatePost();
   const { data: tagsData, isLoading: tagsLoading } = useTags(1, 100);
@@ -57,6 +51,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
       content: post.content || '',
       published: post.published,
     },
+    mode: 'onChange',
   });
 
   const content = watch('content');
@@ -78,7 +73,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
     await handleSubmit(async (data: FieldValues) => {
       if (!content.trim()) {
         setError('content', {
-          message: 'Content is required',
+          message: t('contentRequired'),
         });
         return;
       }
@@ -97,7 +92,10 @@ export function EditPostForm({ post }: EditPostFormProps) {
 
         router.push('/dashboard');
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating the post';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t('error', { error: 'Unknown error' });
         setError('root', {
           message: errorMessage,
         });
@@ -109,7 +107,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
     await handleSubmit(async (data: FieldValues) => {
       if (!content.trim()) {
         setError('content', {
-          message: 'Content is required',
+          message: t('contentRequired'),
         });
         return;
       }
@@ -128,7 +126,10 @@ export function EditPostForm({ post }: EditPostFormProps) {
 
         router.push('/dashboard');
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating the post';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : t('error', { error: 'Unknown error' });
         setError('root', {
           message: errorMessage,
         });
@@ -136,7 +137,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
     })();
   };
 
-  const addTag = (tag: Tag) => {
+  const addTag = (tag: ITag) => {
     if (!selectedTags.find((t) => t.id === tag.id)) {
       setSelectedTags([...selectedTags, tag]);
     }
@@ -154,11 +155,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={() => router.back()}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <CardTitle>Edit Post</CardTitle>
+            <CardTitle>{t('title')}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -168,11 +165,11 @@ export function EditPostForm({ post }: EditPostFormProps) {
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+          <div className="grid gap-3">
+            <Label htmlFor="title">{t('titleLabel')}</Label>
             <Input
               id="title"
-              placeholder="Enter your post title..."
+              placeholder={t('titlePlaceholder')}
               className="text-lg"
               {...register('title')}
             />
@@ -183,16 +180,13 @@ export function EditPostForm({ post }: EditPostFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label>Tags</Label>
+          <div className="grid gap-3">
+            <Label>{t('tagsLabel')}</Label>
             <div className="space-y-3">
               {selectedTags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {selectedTags.map((tag) => (
-                    <Badge
-                      key={tag.id}
-                      className="flex items-center gap-1"
-                    >
+                    <Badge key={tag.id} className="flex items-center gap-1">
                       {tag.name}
                       <X
                         className="h-3 w-3 cursor-pointer hover:bg-black/20 rounded"
@@ -218,27 +212,35 @@ export function EditPostForm({ post }: EditPostFormProps) {
               </div>
               {availableTags.length === 0 && !tagsLoading && (
                 <p className="text-sm text-muted-foreground">
-                  No tags available.{' '}
+                  {t('tagsUnavailable')}{' '}
                   <Link href="/tags" className="text-primary hover:underline">
-                    Create some tags
-                  </Link>{' '}
-                  first.
+                    {t('createTagsLink')}
+                  </Link>
+                  .
                 </p>
               )}
               {tagsLoading && (
-                <p className="text-sm text-muted-foreground">Loading tags...</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('loadingTags')}
+                </p>
               )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Content</Label>
-            <LexicalEditor
+          <div className="grid gap-3">
+            <Label>{t('contentLabel')}</Label>
+            {/* <LexicalEditor
               value={content}
               onChange={(newContent) => {
                 setValue('content', newContent, { shouldValidate: true });
               }}
-              placeholder="Write your post content..."
+              placeholder={t('contentPlaceholder')}
+            /> */}
+            <SimpleEditor
+              content={content}
+              handleUpdate={(newContent: string) => {
+                setValue('content', newContent, { shouldValidate: true });
+              }}
             />
             {errors.content && (
               <p className="text-xs text-red-600">
@@ -247,17 +249,16 @@ export function EditPostForm({ post }: EditPostFormProps) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label>Status</Label>
+          <div className="grid gap-3">
+            <Label>{t('statusLabel')}</Label>
             <div className="flex items-center gap-4">
               <Badge variant={post.published ? 'default' : 'secondary'}>
-                {post.published ? 'Published' : 'Draft'}
+                {post.published ? t('published') : t('draft')}
               </Badge>
               <p className="text-sm text-muted-foreground">
-                Current status:{' '}
                 {post.published
-                  ? 'This post is published and visible to everyone'
-                  : 'This post is saved as a draft'}
+                  ? tPages('currentStatusPublished')
+                  : tPages('currentStatusDraft')}
               </p>
             </div>
           </div>
@@ -268,7 +269,7 @@ export function EditPostForm({ post }: EditPostFormProps) {
               onClick={() => router.back()}
               disabled={isSubmitting}
             >
-              Cancel
+              {t('cancelButton')}
             </Button>
 
             <div className="flex items-center space-x-2">
@@ -280,12 +281,12 @@ export function EditPostForm({ post }: EditPostFormProps) {
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                    Saving...
+                    {t('savingButton')}
                   </div>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save as Draft
+                    <Save />
+                    {t('saveDraftButton')}
                   </>
                 )}
               </Button>
@@ -293,12 +294,12 @@ export function EditPostForm({ post }: EditPostFormProps) {
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Publishing...
+                    {t('publishingButton')}
                   </div>
                 ) : (
                   <>
-                    <Eye className="h-4 w-4 mr-2" />
-                    Publish
+                    <Eye />
+                    {t('publishButton')}
                   </>
                 )}
               </Button>

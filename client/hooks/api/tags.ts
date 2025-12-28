@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api';
-import type { CreateTagRequest, UpdateTagRequest } from '@/lib/api';
+import type { ICreateTagRequest, IUpdateTagRequest } from '@/types/tag.type';
 import {
   createPaginationQuery,
   createCreateMutation,
@@ -31,7 +31,7 @@ export const useTags = createPaginationQuery(
  * Invalidates tags list on success
  */
 export const useCreateTag = createCreateMutation(
-  (data: CreateTagRequest) => apiClient.tags.createTag(data),
+  (data: ICreateTagRequest) => apiClient.tags.createTag(data),
   {
     invalidateKeys: [tagsQueryKeys.lists()],
   }
@@ -43,7 +43,7 @@ export const useCreateTag = createCreateMutation(
  * Accepts { id, data } object
  */
 export const useUpdateTag = createUpdateMutation(
-  ({ id, data }: { id: number; data: UpdateTagRequest }) =>
+  ({ id, data }: { id: number; data: IUpdateTagRequest }) =>
     apiClient.tags.updateTag(id, data),
   {
     invalidateKeys: [tagsQueryKeys.lists()],
