@@ -2,6 +2,7 @@
 
 // import { LexicalEditor } from '@/components/lexical-editor';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -178,13 +179,12 @@ function CreatePostPageContent() {
 
           <div className="grid gap-3">
             <Label>{tCommon('content')}</Label>
-            {/* <LexicalEditor
-              value={content}
-              onChange={(newContent) => {
+            <SimpleEditor
+              content={content}
+              handleUpdate={(newContent: string) => {
                 setValue('content', newContent, { shouldValidate: true });
               }}
-              placeholder={t('contentPlaceholder')}
-            /> */}
+            />
             {errors.content && (
               <p className="text-xs text-red-600">
                 {translateValidationError(errors.content.message, tValidation)}
