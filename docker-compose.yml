@@ -3,10 +3,10 @@ version: '3.8'
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     container_name: blog_postgres_prod
     environment:
-      - POSTGRES_DB=${DB_NAME:-blog}
+      - POSTGRES_DB=blog
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
     secrets:
@@ -17,7 +17,7 @@ services:
     networks:
       - backend_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ${DB_NAME:-blog}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blog"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -116,34 +116,8 @@ services:
       timeout: 10s
       retries: 3
 
-  # Redis for caching and sessions
-  redis:
-    image: redis:7-alpine
-    container_name: blog_redis_prod
-    command: redis-server --requirepass $(cat /run/secrets/redis_password)
-    secrets:
-      - redis_password
-    volumes:
-      - redis_data:/data
-    networks:
-      - backend_network
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-    healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "$(cat /run/secrets/redis_password)", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
 volumes:
   postgres_data:
-    driver: local
-  redis_data:
     driver: local
   nginx_logs:
     driver: local
@@ -161,5 +135,3 @@ secrets:
     file: ./secrets/db_password.txt
   jwt_secret:
     file: ./secrets/jwt_secret.txt
-  redis_password:
-    file: ./secrets/redis_password.txt
